@@ -14,6 +14,7 @@
 		636A779C2ABF0DF90078FA34 /* Tudor_BankTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636A779B2ABF0DF90078FA34 /* Tudor_BankTests.swift */; };
 		636A77A62ABF0DF90078FA34 /* Tudor_BankUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636A77A52ABF0DF90078FA34 /* Tudor_BankUITests.swift */; };
 		636A77A82ABF0DF90078FA34 /* Tudor_BankUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636A77A72ABF0DF90078FA34 /* Tudor_BankUITestsLaunchTests.swift */; };
+		636A77BD2ABF15A80078FA34 /* BankingEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 636A77BC2ABF15A80078FA34 /* BankingEngine */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				636A77BD2ABF15A80078FA34 /* BankingEngine in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +83,7 @@
 				636A779A2ABF0DF90078FA34 /* Tudor BankTests */,
 				636A77A42ABF0DF90078FA34 /* Tudor BankUITests */,
 				636A77872ABF0DF70078FA34 /* Products */,
+				636A77BB2ABF15A80078FA34 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -131,6 +134,13 @@
 			path = "Tudor BankUITests";
 			sourceTree = "<group>";
 		};
+		636A77BB2ABF15A80078FA34 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -148,6 +158,7 @@
 			);
 			name = "Tudor Bank";
 			packageProductDependencies = (
+				636A77BC2ABF15A80078FA34 /* BankingEngine */,
 			);
 			productName = "Tudor Bank";
 			productReference = 636A77862ABF0DF70078FA34 /* Tudor Bank.app */;
@@ -615,6 +626,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		636A77BC2ABF15A80078FA34 /* BankingEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BankingEngine;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 636A777E2ABF0DF70078FA34 /* Project object */;
 }
