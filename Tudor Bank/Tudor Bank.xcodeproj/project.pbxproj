@@ -45,6 +45,7 @@
 		636A77A12ABF0DF90078FA34 /* Tudor BankUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Tudor BankUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		636A77A52ABF0DF90078FA34 /* Tudor_BankUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tudor_BankUITests.swift; sourceTree = "<group>"; };
 		636A77A72ABF0DF90078FA34 /* Tudor_BankUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tudor_BankUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		636A77BA2ABF11270078FA34 /* BankingEngine */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = BankingEngine; path = ../BankingEngine; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +76,7 @@
 		636A777D2ABF0DF70078FA34 = {
 			isa = PBXGroup;
 			children = (
+				636A77BA2ABF11270078FA34 /* BankingEngine */,
 				636A77882ABF0DF70078FA34 /* Tudor Bank */,
 				636A779A2ABF0DF90078FA34 /* Tudor BankTests */,
 				636A77A42ABF0DF90078FA34 /* Tudor BankUITests */,
@@ -145,6 +147,8 @@
 			dependencies = (
 			);
 			name = "Tudor Bank";
+			packageProductDependencies = (
+			);
 			productName = "Tudor Bank";
 			productReference = 636A77862ABF0DF70078FA34 /* Tudor Bank.app */;
 			productType = "com.apple.product-type.application";
@@ -217,6 +221,8 @@
 				Base,
 			);
 			mainGroup = 636A777D2ABF0DF70078FA34;
+			packageReferences = (
+			);
 			productRefGroup = 636A77872ABF0DF70078FA34 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -432,7 +438,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
@@ -468,7 +474,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
