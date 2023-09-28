@@ -48,6 +48,14 @@ public class BankingEngine {
         throw OperationError.accountNotFound
     }
     
+    public func getBalance(for id: Account.ID) throws -> Decimal {
+        if let account = accounts[id] {
+            return account.balance
+        }
+        
+        throw OperationError.accountNotFound
+    }
+    
     public func deposit(amount: Decimal, to id: Account.ID, shouldLogTransaction: Bool = true) throws {
         guard amount >= 0.0 else {
             throw OperationError.invalidDeposit
@@ -128,13 +136,7 @@ public class BankingEngine {
         return retrievedTransactions
     }
     
-    public func getBalance(for id: Account.ID) throws -> Decimal {
-        if let account = accounts[id] {
-            return account.balance
-        }
-        
-        throw OperationError.accountNotFound
-    }
+    
     
     public init() {
     }
