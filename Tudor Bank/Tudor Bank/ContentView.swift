@@ -7,6 +7,7 @@
 
 import SwiftUI
 import BankingEngine
+import Combine
 
 let myBank = BankingEngine()
 
@@ -17,9 +18,10 @@ struct InputVar {
 }
 
 struct MyTextField: View {
-    var name: String
-    @State var enteredValue: String = ""
-    var isIncorrectEntry = false
+    @Binding var enteredValue: String
+    
+    let name: String
+    let isIncorrectEntry: Bool
     
     var body: some View {
         HStack {
@@ -34,50 +36,80 @@ struct MyTextField: View {
 }
 
 struct CreateAccountView: View {
+    
+    func isFieldEmpty(input: String) -> Bool {
+        if input == "" {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     @State var output = ""
     
-    @State var myIdView = MyTextField(name: "id")
-    @State var myNameView = MyTextField(name: "name")
-    @State var myBalanceView = MyTextField(name: "balance")
-        
+    @State var enteredId: String = ""
+    @State var enteredName: String = ""
+    @State var enteredBalance: String = ""
+    
+    @State var isIncorrectEntryId: Bool = false
+    @State var isIncorrectEntryName: Bool = false
+    @State var isIncorrectEntryBalance: Bool = false
+    
+    var canCreateAccountPublisher: AnyPublisher<Bool, Never> {
+        Publishers.CombineLatest3(enteredId, enteredName, enteredBalance)
+            .map { id, name, balance in
+                return id != "" && name != "" && balance != ""
+            }
+            
+    }
+    
+    
+    
     var body: some View {
         VStack {
             
             List {
-                myIdView
-                myNameView
-                myBalanceView
+                MyTextField(enteredValue: $enteredId, name: "id", isIncorrectEntry: isIncorrectEntryId)
+                MyTextField(enteredValue: $enteredName, name: "name", isIncorrectEntry: isIncorrectEntryName)
+                MyTextField(enteredValue: $enteredBalance, name: "balance", isIncorrectEntry: isIncorrectEntryBalance)
             }
             
             Button("Enter inputs") {
-                print("yooooo", myIdView.enteredValue)
-                var id: Int? = Int(myIdView.enteredValue)
-                print("id", id)
-                var name = myNameView.enteredValue
-                var balance: Decimal? = Decimal(string: myBalanceView.enteredValue)
-    
+                output = ""
                 
-                if id == nil {
-                    myIdView.isIncorrectEntry = true
-                } else {
-                    myIdView.isIncorrectEntry = false
+                isIncorrectEntryId = isFieldEmpty(input: enteredId)
+                isIncorrectEntryName = isFieldEmpty(input: enteredName)
+                isIncorrectEntryBalance = isFieldEmpty(input: enteredBalance)
+                
+                guard !isIncorrectEntryId, !isIncorrectEntryName, !isIncorrectEntryBalance else {
+                    return
                 }
-                if name == "" {
-                    myNameView.isIncorrectEntry = true
-                } else {
-                    myNameView.isIncorrectEntry = false
+                
+                guard let id = Int(enteredId) else {
+                    isIncorrectEntryId = true
+                
+                    return
                 }
-                if balance == nil {
-                    myBalanceView.isIncorrectEntry = true
-                } else {
-                    myBalanceView.isIncorrectEntry = false
+                isIncorrectEntryId = false
+        
+                
+                
+                guard let balance = Decimal(string: enteredBalance) else {
+                    isIncorrectEntryBalance = true
+                    return
                 }
+                isIncorrectEntryBalance = false
                     
-                if (id != nil) && (name != "") && (balance != nil) {
-                    // just tested they're not nil so force unwrap
-                    myBank.createAccount(id: id!, name: name, balance: balance!)
-                    output = "account created"
-                }
+                myBank.createAccount(id: id, name: enteredName, balance: balance)
+                
+                output = "account created"
+                
+                enteredId = ""
+                enteredName = ""
+                enteredBalance = ""
+                
+                
+                
             }
             .buttonStyle(BorderedButtonStyle())
             
@@ -143,10 +175,10 @@ struct GetAccountView: View {
 
                     do {
                         try output = "get account: \(myBank.getAccount(for: id!))"
-//                    } catch BankingEngine.OperationError.accountNotFound {
-//                        output = "Error: accound not found"
-//                    } catch is BankingEngine.OperationError {
-//                        output = "Error: BankingEngine.OperationError"
+                    } catch BankingEngine.OperationError.accountNotFound {
+                        output = "Error: account not found"
+                    } catch is BankingEngine.OperationError {
+                        output = "Error: BankingEngine.OperationError"
                     } catch {
                         output = "Some other error"
                     }
@@ -179,11 +211,13 @@ struct GetBalanceView: View {
                 } else {
 
                     do {
-                        try output = "The balance of id: \(id!) is £\(myBank.getBalance(for: id!))"
-//                    } catch BankingEngine.OperationError.accountNotFound {
-//                        output = "Error: accound not found"
-//                    } catch is BankingEngine.OperationError {
-//                        output = "Error: BankingEngine.OperationError"
+                        // make a variable
+                        let myBalance = try myBank.getBalance(for: id!)
+                        output = "The balance of id: \(id!) is £\(myBalance)"
+                    } catch BankingEngine.OperationError.accountNotFound {
+                        output = "Error: accound not found"
+                    } catch is BankingEngine.OperationError {
+                        output = "Error: BankingEngine.OperationError"
                     } catch {
                         output = "Some other error"
                     }
@@ -378,6 +412,7 @@ struct ContentView: View {
                     
                 
             }
+            .navigationTitle("Function list")
         }
     }
     

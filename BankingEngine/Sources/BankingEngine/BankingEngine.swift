@@ -2,7 +2,7 @@ import Foundation
 
 public class BankingEngine {
     // objects
-    enum OperationError: Error {
+    public enum OperationError: Error {
         case accountNotFound
         case invalidDeposit
         case invalidWithdrawl
@@ -144,9 +144,9 @@ public class BankingEngine {
 
 public class Account {
     public typealias ID = Int
-    let id: Account.ID
-    let name: String
-    var balance: Decimal
+    public let id: Account.ID
+    public let name: String
+    public var balance: Decimal
 
     init(id: Account.ID, name: String, balance: Decimal) {
         self.id = id
