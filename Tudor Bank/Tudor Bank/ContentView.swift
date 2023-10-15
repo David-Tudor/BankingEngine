@@ -55,15 +55,12 @@ struct CreateAccountView: View {
     @State var isIncorrectEntryName: Bool = false
     @State var isIncorrectEntryBalance: Bool = false
     
-    var canCreateAccountPublisher: AnyPublisher<Bool, Never> {
-        Publishers.CombineLatest3(enteredId, enteredName, enteredBalance)
-            .map { id, name, balance in
-                return id != "" && name != "" && balance != ""
-            }
-            
-    }
-    
-    
+//    var canCreateAccountPublisher: AnyPublisher<Bool, Never> {
+//        Publishers.CombineLatest3(enteredId, enteredName, enteredBalance)
+//            .map { id, name, balance in
+//                return id != "" && name != "" && balance != ""
+//            }
+//    }
     
     var body: some View {
         VStack {

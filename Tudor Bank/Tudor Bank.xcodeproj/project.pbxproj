@@ -16,6 +16,7 @@
 		636A77A82ABF0DF90078FA34 /* Tudor_BankUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636A77A72ABF0DF90078FA34 /* Tudor_BankUITestsLaunchTests.swift */; };
 		636A77BD2ABF15A80078FA34 /* BankingEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 636A77BC2ABF15A80078FA34 /* BankingEngine */; };
 		A95C64F02AC8258800251ECD /* ExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95C64EF2AC8258800251ECD /* ExampleView.swift */; };
+		A9AEB61D2ADC5EDC0020793B /* ExampleViewWithCombine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		636A77A72ABF0DF90078FA34 /* Tudor_BankUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tudor_BankUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		636A77BA2ABF11270078FA34 /* BankingEngine */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = BankingEngine; path = ../BankingEngine; sourceTree = "<group>"; };
 		A95C64EF2AC8258800251ECD /* ExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleView.swift; sourceTree = "<group>"; };
+		A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewWithCombine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 				636A77892ABF0DF70078FA34 /* Tudor_BankApp.swift */,
 				636A778B2ABF0DF70078FA34 /* ContentView.swift */,
 				A95C64EF2AC8258800251ECD /* ExampleView.swift */,
+				A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */,
 				636A778D2ABF0DF90078FA34 /* Assets.xcassets */,
 				636A778F2ABF0DF90078FA34 /* Tudor_Bank.entitlements */,
 				636A77902ABF0DF90078FA34 /* Preview Content */,
@@ -282,6 +285,7 @@
 				636A778C2ABF0DF70078FA34 /* ContentView.swift in Sources */,
 				636A778A2ABF0DF70078FA34 /* Tudor_BankApp.swift in Sources */,
 				A95C64F02AC8258800251ECD /* ExampleView.swift in Sources */,
+				A9AEB61D2ADC5EDC0020793B /* ExampleViewWithCombine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
