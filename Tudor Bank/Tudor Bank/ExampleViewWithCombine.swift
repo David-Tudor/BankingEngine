@@ -19,13 +19,15 @@ func accessValue(of name: Names) {
     switch name {
         case .david:
             break
-        case .pepe(let value):
+    case .pepe(_):
             break
+//        case .pepe(let value):
+//            break
     }
     
-    if case let .pepe(value) = name {
+    //if case let .pepe(value) = name {
         // then consume string
-    }
+    //}
 }
 
 // End of.
@@ -97,7 +99,7 @@ struct MyCustomTextField {
         
         onTextChange(storedText)
         
-        var justPepe: AnyPublisher<Int, Never> = modifiedTextPublisher
+        var _: AnyPublisher<Int, Never> = modifiedTextPublisher
             .flatMap({ string in
                 Just(123456)
             })
@@ -201,7 +203,7 @@ class MyModel: ObservableObject {
 struct ExampleViewWithCombine: View {
     @StateObject private var model = MyModel()
     
-    var header: String = ""
+    //var header: String = "" -not needed i think
     
     var body: some View {
         VStack {

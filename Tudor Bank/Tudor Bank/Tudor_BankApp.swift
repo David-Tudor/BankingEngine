@@ -11,7 +11,7 @@ import SwiftUI
 struct Tudor_BankApp: App {
     var body: some Scene {
         WindowGroup {
-            FiltersView()
+            ContentView()
         }
     }
 }

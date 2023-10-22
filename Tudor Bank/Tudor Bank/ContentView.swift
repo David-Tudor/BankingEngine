@@ -17,26 +17,52 @@ struct InputVar {
     var name: String
 }
 
-struct MyTextField: View {
-    @Binding var enteredValue: String
-    
-    let name: String
-    let isIncorrectEntry: Bool
+struct CrossOrTickMark: View {
+    var isIncorrectEntry: Bool //no @binding?
     
     var body: some View {
-        HStack {
-            TextField("Enter \(name)", text: $enteredValue)
-            
-            if isIncorrectEntry {
-                Image(systemName: "xmark.circle" )
-                    .foregroundColor(.red)
-            }
+        if isIncorrectEntry {
+            Image(systemName: "xmark.circle" )
+                .foregroundColor(.red)
         }
+    }
+
+    init(isIncorrectEntry: Bool) {
+        self.isIncorrectEntry = isIncorrectEntry
     }
 }
 
-struct CreateAccountView: View {
+enum FieldTypes {
+    case id
+    case amount
+    case name
+}
+
+struct MyField {
+    var type: FieldTypes
+    var enteredValue: String
+    var isIncorrectEntry: Bool
     
+    init(type: FieldTypes, enteredValue: String, isIncorrectEntry: Bool) {
+        self.type = type
+        self.enteredValue = enteredValue
+        self.isIncorrectEntry = isIncorrectEntry
+    }
+}
+
+class Model: ObservableObject {
+    @Published var idField = MyField(type: .id, enteredValue: "", isIncorrectEntry: false)
+    @Published var nameField = MyField(type: .name, enteredValue: "", isIncorrectEntry: false)
+    @Published var balanceField = MyField(type: .amount, enteredValue: "", isIncorrectEntry: false)
+    
+//    @Published var enteredId = ""
+//    @Published var enteredName = ""
+//    @Published var enteredBalance = ""
+//    
+//    @Published var isIncorrectIdEntry = false
+//    @Published var isIncorrectNameEntry = false
+//    @Published var isIncorrectBalanceEntry = false
+//    
     func isFieldEmpty(input: String) -> Bool {
         if input == "" {
             return true
@@ -45,72 +71,165 @@ struct CreateAccountView: View {
         }
     }
     
+    func isNotInt(input: String) -> Bool {
+        let wasntCast = (Int(input) != nil)
+        if (input == "") || wasntCast {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func isNotDec(input: String) -> Bool {
+        let wasntCast = (Decimal(string: input) != nil)
+        if input == "" || wasntCast {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    // make a func which returns bool depending on validity of entry - currently ONLY empty
+    func buildStringToBoolPublisher(with entry: MyField) -> Future<Bool, Error> {
+        print("build stb")
+        let validationAsyncPublisher = Future<Bool, Error> { promise in
+            switch entry.type {
+            case .name:
+                let isInvalid = self.isFieldEmpty(input: entry.enteredValue)
+                promise(.success(isInvalid))
+            case .id:
+                print("here")
+                let isInvalid = self.isNotInt(input: entry.enteredValue)
+                promise(.success(isInvalid))
+            case .amount:
+                let isInvalid = self.isNotDec(input: entry.enteredValue)
+                promise(.success(isInvalid))
+            }
+        }
+        print(validationAsyncPublisher)
+        return validationAsyncPublisher
+    }
+    
+    // is this one needed if the string to bool is a publisher?
+    // this turns the bool into a publisher
+    
+//    var isEntryEmptyPublisher: AnyPublisher<Bool, Never> {
+//        print("hi")
+//        return $idField
+//            .flatMap({ entry in
+//                self.buildStringToBoolPublisher(with: entry)
+//                    .catch { error in
+//                        Just(false)
+//                    }
+//            })
+//            .eraseToAnyPublisher()
+//    }
+    
+    
+    
+    func isIdInvalidPublisher() -> AnyPublisher<Bool, Never> {
+        return $idField
+            .flatMap({ entry in
+                self.buildStringToBoolPublisher(with: entry)
+                    .catch { error in
+                        Just(false)
+                    }
+            })
+            .eraseToAnyPublisher()
+    }
+    
+    func isNameInvalidPublisher() -> AnyPublisher<Bool, Never> {
+        return $nameField
+            .flatMap({ entry in
+                self.buildStringToBoolPublisher(with: entry)
+                    .catch { error in
+                        Just(false)
+                    }
+            })
+            .eraseToAnyPublisher()
+    }
+    
+    func isBalanceInvalidPublisher() -> AnyPublisher<Bool, Never> {
+        return $balanceField
+            .flatMap({ entry in
+                self.buildStringToBoolPublisher(with: entry)
+                    .catch { error in
+                        Just(false)
+                    }
+            })
+            .eraseToAnyPublisher()
+    }
+    
+    
+    // this receives the bool publisher and does stuff
+    private var cancellable: AnyCancellable?
+    
+    func isFieldIncorrect(field: MyField) {
+        let myPublisher: () -> AnyPublisher<Bool, Never>
+        
+        switch field.type {
+        case .name:
+            myPublisher = isNameInvalidPublisher
+        case .id:
+            myPublisher = isIdInvalidPublisher
+        case .amount:
+            myPublisher = isBalanceInvalidPublisher
+        }
+        
+        print("before cancellable")
+        cancellable = myPublisher().sink { completion in
+            // no-op
+        } receiveValue: { [weak self] isTextInvalid in
+            guard let self else {
+                return
+            }
+            idField.isIncorrectEntry = isTextInvalid
+        }
+        
+    }
+
+
+}
+
+struct CreateAccountView: View {
+    @StateObject private var model = Model()
     @State var output = ""
     
-    @State var enteredId: String = ""
-    @State var enteredName: String = ""
-    @State var enteredBalance: String = ""
-    
-    @State var isIncorrectEntryId: Bool = false
-    @State var isIncorrectEntryName: Bool = false
-    @State var isIncorrectEntryBalance: Bool = false
-    
-//    var canCreateAccountPublisher: AnyPublisher<Bool, Never> {
-//        Publishers.CombineLatest3(enteredId, enteredName, enteredBalance)
-//            .map { id, name, balance in
-//                return id != "" && name != "" && balance != ""
-//            }
-//    }
+    var textChangedPublisher = CurrentValueSubject<String, Never>("")
     
     var body: some View {
         VStack {
             
             List {
-                MyTextField(enteredValue: $enteredId, name: "id", isIncorrectEntry: isIncorrectEntryId)
-                MyTextField(enteredValue: $enteredName, name: "name", isIncorrectEntry: isIncorrectEntryName)
-                MyTextField(enteredValue: $enteredBalance, name: "balance", isIncorrectEntry: isIncorrectEntryBalance)
+                HStack {
+                    TextField("Enter id", text: $model.idField.enteredValue)
+                    CrossOrTickMark(isIncorrectEntry: model.idField.isIncorrectEntry)
+                }
+                
+                HStack {
+                    TextField("Enter name", text: $model.nameField.enteredValue)
+                    CrossOrTickMark(isIncorrectEntry: model.nameField.isIncorrectEntry)
+                }
+                
+                HStack {
+                    TextField("Enter balance", text: $model.balanceField.enteredValue)
+                    CrossOrTickMark(isIncorrectEntry: model.balanceField.isIncorrectEntry)
+                }
+
             }
             
             Button("Enter inputs") {
                 output = ""
+                print("1")
+                model.isFieldIncorrect(field: model.idField)
                 
-                isIncorrectEntryId = isFieldEmpty(input: enteredId)
-                isIncorrectEntryName = isFieldEmpty(input: enteredName)
-                isIncorrectEntryBalance = isFieldEmpty(input: enteredBalance)
-                
-                guard !isIncorrectEntryId, !isIncorrectEntryName, !isIncorrectEntryBalance else {
-                    return
-                }
-                
-                guard let id = Int(enteredId) else {
-                    isIncorrectEntryId = true
-                
-                    return
-                }
-                isIncorrectEntryId = false
-        
-                
-                
-                guard let balance = Decimal(string: enteredBalance) else {
-                    isIncorrectEntryBalance = true
-                    return
-                }
-                isIncorrectEntryBalance = false
-                    
-                myBank.createAccount(id: id, name: enteredName, balance: balance)
-                
-                output = "account created"
-                
-                enteredId = ""
-                enteredName = ""
-                enteredBalance = ""
-                
-                
-                
+            
             }
             .buttonStyle(BorderedButtonStyle())
             
+            
             Text(output)
+            
         }
     }
 }
