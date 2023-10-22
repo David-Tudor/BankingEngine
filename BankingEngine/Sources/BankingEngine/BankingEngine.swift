@@ -144,6 +144,7 @@ public class BankingEngine {
 
 public class Account {
     public typealias ID = Int
+    
     public let id: Account.ID
     public let name: String
     public var balance: Decimal

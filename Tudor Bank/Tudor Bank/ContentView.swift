@@ -4,31 +4,24 @@
 //
 //  Created by David Tudor on 23/09/2023.
 //
-
 import SwiftUI
 import BankingEngine
 import Combine
 
 let myBank = BankingEngine()
 
-// revove this
-struct InputVar {
-    var enteredValue: String = ""
-    var name: String
-}
-
 struct CrossOrTickMark: View {
-    var isIncorrectEntry: Bool //no @binding?
+    var isCorrectEntry: Bool
     
     var body: some View {
-        if isIncorrectEntry {
+        if !isCorrectEntry {
             Image(systemName: "xmark.circle" )
                 .foregroundColor(.red)
         }
     }
 
-    init(isIncorrectEntry: Bool) {
-        self.isIncorrectEntry = isIncorrectEntry
+    init(isCorrectEntry: Bool) {
+        self.isCorrectEntry = isCorrectEntry
     }
 }
 
@@ -41,153 +34,121 @@ enum FieldTypes {
 struct MyField {
     var type: FieldTypes
     var enteredValue: String
-    var isIncorrectEntry: Bool
     
-    init(type: FieldTypes, enteredValue: String, isIncorrectEntry: Bool) {
+    init(type: FieldTypes, enteredValue: String) {
         self.type = type
         self.enteredValue = enteredValue
-        self.isIncorrectEntry = isIncorrectEntry
     }
 }
 
 class Model: ObservableObject {
-    @Published var idField = MyField(type: .id, enteredValue: "", isIncorrectEntry: false)
-    @Published var nameField = MyField(type: .name, enteredValue: "", isIncorrectEntry: false)
-    @Published var balanceField = MyField(type: .amount, enteredValue: "", isIncorrectEntry: false)
+    @Published var idField = MyField(type: .id, enteredValue: "")
+    @Published var id2Field = MyField(type: .id, enteredValue: "") // used for destinations Id
+    @Published var nameField = MyField(type: .name, enteredValue: "")
+    @Published var balanceField = MyField(type: .amount, enteredValue: "")
     
-//    @Published var enteredId = ""
-//    @Published var enteredName = ""
-//    @Published var enteredBalance = ""
-//    
-//    @Published var isIncorrectIdEntry = false
-//    @Published var isIncorrectNameEntry = false
-//    @Published var isIncorrectBalanceEntry = false
-//    
-    func isFieldEmpty(input: String) -> Bool {
-        if input == "" {
+    @Published var isIdValid = true
+    @Published var isId2Valid = true
+    @Published var isNameValid = true
+    @Published var isBalanceValid = true
+
+    func isValidString(input: String) -> Bool {
+        if input != "" {
             return true
         } else {
             return false
         }
     }
     
-    func isNotInt(input: String) -> Bool {
-        let wasntCast = (Int(input) != nil)
-        if (input == "") || wasntCast {
+    func isValidInt(input: String) -> Bool {
+        let wasCast = (Int(input) != nil)
+        if (input != "") && wasCast {
             return true
         } else {
             return false
         }
     }
     
-    func isNotDec(input: String) -> Bool {
-        let wasntCast = (Decimal(string: input) != nil)
-        if input == "" || wasntCast {
+    func isValidDec(input: String) -> Bool {
+        let wasCast = (Decimal(string: input) != nil)
+        if input != "" && wasCast {
             return true
         } else {
             return false
         }
     }
     
-    // make a func which returns bool depending on validity of entry - currently ONLY empty
-    func buildStringToBoolPublisher(with entry: MyField) -> Future<Bool, Error> {
-        print("build stb")
-        let validationAsyncPublisher = Future<Bool, Error> { promise in
-            switch entry.type {
-            case .name:
-                let isInvalid = self.isFieldEmpty(input: entry.enteredValue)
-                promise(.success(isInvalid))
-            case .id:
-                print("here")
-                let isInvalid = self.isNotInt(input: entry.enteredValue)
-                promise(.success(isInvalid))
-            case .amount:
-                let isInvalid = self.isNotDec(input: entry.enteredValue)
-                promise(.success(isInvalid))
-            }
-        }
-        print(validationAsyncPublisher)
-        return validationAsyncPublisher
-    }
-    
-    // is this one needed if the string to bool is a publisher?
-    // this turns the bool into a publisher
-    
-//    var isEntryEmptyPublisher: AnyPublisher<Bool, Never> {
-//        print("hi")
-//        return $idField
-//            .flatMap({ entry in
-//                self.buildStringToBoolPublisher(with: entry)
-//                    .catch { error in
-//                        Just(false)
-//                    }
-//            })
-//            .eraseToAnyPublisher()
-//    }
-    
-    
-    
-    func isIdInvalidPublisher() -> AnyPublisher<Bool, Never> {
-        return $idField
-            .flatMap({ entry in
-                self.buildStringToBoolPublisher(with: entry)
-                    .catch { error in
-                        Just(false)
-                    }
-            })
-            .eraseToAnyPublisher()
-    }
-    
-    func isNameInvalidPublisher() -> AnyPublisher<Bool, Never> {
-        return $nameField
-            .flatMap({ entry in
-                self.buildStringToBoolPublisher(with: entry)
-                    .catch { error in
-                        Just(false)
-                    }
-            })
-            .eraseToAnyPublisher()
-    }
-    
-    func isBalanceInvalidPublisher() -> AnyPublisher<Bool, Never> {
-        return $balanceField
-            .flatMap({ entry in
-                self.buildStringToBoolPublisher(with: entry)
-                    .catch { error in
-                        Just(false)
-                    }
-            })
-            .eraseToAnyPublisher()
-    }
-    
-    
-    // this receives the bool publisher and does stuff
-    private var cancellable: AnyCancellable?
-    
-    func isFieldIncorrect(field: MyField) {
-        let myPublisher: () -> AnyPublisher<Bool, Never>
-        
+    func buildStringToBoolVar(with field: MyField) -> Bool {
         switch field.type {
         case .name:
-            myPublisher = isNameInvalidPublisher
+            return self.isValidString(input: field.enteredValue)
+            
         case .id:
-            myPublisher = isIdInvalidPublisher
+            return self.isValidInt(input: field.enteredValue)
+            
         case .amount:
-            myPublisher = isBalanceInvalidPublisher
+            return self.isValidDec(input: field.enteredValue)
         }
+    }
+    
+    func isFieldValidPublisher(field: Published<MyField>.Publisher) -> AnyPublisher<Bool, Never> {
+        return field
+            .map({ entry in
+                self.buildStringToBoolVar(with: entry)
+            })
+            .eraseToAnyPublisher()
+    }
+    
+    var subscriptions = Set<AnyCancellable>()
+    
+    func createIdValidationSubscription() {
         
-        print("before cancellable")
-        cancellable = myPublisher().sink { completion in
+        isFieldValidPublisher(field: $idField).sink { completion in
             // no-op
-        } receiveValue: { [weak self] isTextInvalid in
+        } receiveValue: { [weak self] isTextValid in
             guard let self else {
                 return
             }
-            idField.isIncorrectEntry = isTextInvalid
+            isIdValid = isTextValid
         }
-        
+        .store(in: &subscriptions)
     }
-
+    
+    func createId2ValidationSubscription() {
+        isFieldValidPublisher(field: $id2Field).sink { completion in
+            // no-op
+        } receiveValue: { [weak self] isTextValid in
+            guard let self else {
+                return
+            }
+            isId2Valid = isTextValid
+        }
+        .store(in: &subscriptions)
+    }
+    
+    func createNameValidationSubscription() {
+        isFieldValidPublisher(field: $nameField).sink { completion in
+            // no-op
+        } receiveValue: { [weak self] isTextValid in
+            guard let self else {
+                return
+            }
+            isNameValid = isTextValid
+        }
+        .store(in: &subscriptions)
+    }
+        
+    func createBalanceValidationSubscription() {
+        isFieldValidPublisher(field: $balanceField).sink { completion in
+            // no-op
+        } receiveValue: { [weak self] isTextValid in
+            guard let self else {
+                return
+            }
+            isBalanceValid = isTextValid
+        }
+        .store(in: &subscriptions)
+    }
 
 }
 
@@ -195,307 +156,322 @@ struct CreateAccountView: View {
     @StateObject private var model = Model()
     @State var output = ""
     
-    var textChangedPublisher = CurrentValueSubject<String, Never>("")
-    
     var body: some View {
         VStack {
-            
             List {
                 HStack {
                     TextField("Enter id", text: $model.idField.enteredValue)
-                    CrossOrTickMark(isIncorrectEntry: model.idField.isIncorrectEntry)
+                    CrossOrTickMark(isCorrectEntry: model.isIdValid)
                 }
                 
                 HStack {
                     TextField("Enter name", text: $model.nameField.enteredValue)
-                    CrossOrTickMark(isIncorrectEntry: model.nameField.isIncorrectEntry)
+                    CrossOrTickMark(isCorrectEntry: model.isNameValid)
                 }
                 
                 HStack {
                     TextField("Enter balance", text: $model.balanceField.enteredValue)
-                    CrossOrTickMark(isIncorrectEntry: model.balanceField.isIncorrectEntry)
+                    CrossOrTickMark(isCorrectEntry: model.isBalanceValid)
                 }
-
             }
             
             Button("Enter inputs") {
-                output = ""
-                print("1")
-                model.isFieldIncorrect(field: model.idField)
+                let id = Int(model.idField.enteredValue)!
+                let name = model.nameField.enteredValue
+                let balance = Decimal(string: model.balanceField.enteredValue)!
                 
+                myBank.createAccount(id: id, name: name, balance: balance)
+                output = "Account created"
             
             }
             .buttonStyle(BorderedButtonStyle())
-            
+            .disabled(!(model.isIdValid && model.isNameValid && model.isBalanceValid))
             
             Text(output)
-            
+        }
+        .onAppear {
+            model.createIdValidationSubscription()
+            model.createNameValidationSubscription()
+            model.createBalanceValidationSubscription()
         }
     }
 }
 
-//struct CreateAccountView: View {
-//    @State var output = ""
-//    
-//    @State var myId = InputVar(name: "id")
-//    @State var myName = InputVar(name: "name")
-//    @State var myBalance = InputVar(name: "balance")
-//        
-//    var body: some View {
-//        VStack {
-//            
-//            List {
-//                TextField("Enter id", text: $myId.enteredValue)
-//                TextField("Enter name", text: $myName.enteredValue)
-//                TextField("Enter balance", text: $myBalance.enteredValue)
-//
-//            }
-//            
-//            Button("Enter inputs") {
-//                let id: Int? = Int(myId.enteredValue)
-//                let name = myName.enteredValue
-//                let balance: Decimal? = Decimal(string: myBalance.enteredValue)
-//    
-//                if (id == nil) || (name == "") || (balance == nil) {
-//                    output = "enter again"
-//                } else {
-//                    myBank.createAccount(id: id!, name: name, balance: balance!)
-//                    output = "account created"
-//                }
-//            }
-//            .buttonStyle(BorderedButtonStyle())
-//            
-//            Text(output)
-//        }
-//    }
-//}
 
 struct GetAccountView: View {
+    @StateObject private var model = Model()
     @State var output = ""
     
-    @State var myId = InputVar(name: "id")
-
     var body: some View {
         VStack {
-            
             List {
-                TextField("Enter id", text: $myId.enteredValue)
+                HStack {
+                    TextField("Enter id", text: $model.idField.enteredValue)
+                    CrossOrTickMark(isCorrectEntry: model.isIdValid)
+                }
             }
             
             Button("Enter input") {
-                let id: Int? = Int(myId.enteredValue)
-
-                if (id == nil) {
-                    output = "enter again"
-                } else {
-
-                    do {
-                        try output = "get account: \(myBank.getAccount(for: id!))"
-                    } catch BankingEngine.OperationError.accountNotFound {
-                        output = "Error: account not found"
-                    } catch is BankingEngine.OperationError {
-                        output = "Error: BankingEngine.OperationError"
-                    } catch {
-                        output = "Some other error"
-                    }
+                do {
+                    let id = Int(model.idField.enteredValue)!
+                    let gotAccount = try myBank.getAccount(for: id)
+                                                           
+                    output = "got account: id = \(gotAccount.id), name = \(gotAccount.name), balance = \(gotAccount.balance)"
+                } catch BankingEngine.OperationError.accountNotFound {
+                    output = "GetAccount - Error: account not found"
+                } catch is BankingEngine.OperationError {
+                    output = "GetAccount - Error: BankingEngine.OperationError"
+                } catch {
+                    output = "GetAccount - Some other error"
                 }
+            
             }
             .buttonStyle(BorderedButtonStyle())
+            .disabled(!(model.isIdValid))
             
             Text(output)
+        }
+        .onAppear {
+            model.createIdValidationSubscription()
         }
     }
 }
 
 struct GetBalanceView: View {
+    @StateObject private var model = Model()
     @State var output = ""
     
-    @State var myId = InputVar(name: "id")
-
     var body: some View {
         VStack {
-            
             List {
-                TextField("Enter id", text: $myId.enteredValue)
+                HStack {
+                    TextField("Enter id", text: $model.idField.enteredValue)
+                    CrossOrTickMark(isCorrectEntry: model.isIdValid)
+                }
             }
             
             Button("Enter input") {
-                let id: Int? = Int(myId.enteredValue)
-
-                if (id == nil) {
-                    output = "enter again"
-                } else {
-
-                    do {
-                        // make a variable
-                        let myBalance = try myBank.getBalance(for: id!)
-                        output = "The balance of id: \(id!) is £\(myBalance)"
-                    } catch BankingEngine.OperationError.accountNotFound {
-                        output = "Error: accound not found"
-                    } catch is BankingEngine.OperationError {
-                        output = "Error: BankingEngine.OperationError"
-                    } catch {
-                        output = "Some other error"
-                    }
+                do {
+                    let id = Int(model.idField.enteredValue)!
+                    let gotBalance = try myBank.getBalance(for: id)
+                    output = "The balance of id: \(id) is £\(gotBalance)"
+                    
+                } catch BankingEngine.OperationError.accountNotFound {
+                    output = "GetBalance - Error: account not found"
+                } catch is BankingEngine.OperationError {
+                    output = "GetBalance - Error: BankingEngine.OperationError"
+                } catch {
+                    output = "GetBalance - Some other error"
                 }
+            
             }
             .buttonStyle(BorderedButtonStyle())
+            .disabled(!(model.isIdValid))
             
             Text(output)
+        }
+        .onAppear {
+            model.createIdValidationSubscription()
         }
     }
 }
 
+
 struct DepositView: View {
+    @StateObject private var model = Model()
     @State var output = ""
     
-    @State var myId = InputVar(name: "id")
-    @State var myAmount = InputVar(name: "amount")
-        
     var body: some View {
         VStack {
-            
             List {
-                TextField("Enter destination id", text: $myId.enteredValue)
-                TextField("Enter amount", text: $myAmount.enteredValue)
+                HStack {
+                    TextField("Enter destination id", text: $model.idField.enteredValue)
+                    CrossOrTickMark(isCorrectEntry: model.isIdValid)
+                }
+                
+                HStack {
+                    TextField("Enter amount", text: $model.balanceField.enteredValue)
+                    CrossOrTickMark(isCorrectEntry: model.isBalanceValid)
+                }
             }
             
             Button("Enter inputs") {
-                let id: Int? = Int(myId.enteredValue)
-                let amount: Decimal? = Decimal(string: myAmount.enteredValue)
-    
-                if (id == nil) || (amount == nil) {
-                    output = "enter again"
-                } else {
-                    do {
-                        try myBank.deposit(amount: amount!, to: id!)
-                        output = "amount deposited"
-                    } catch {
-                        output = "deposit threw some error"
-                    }
+                do {
+                    let id = Int(model.idField.enteredValue)!
+                    let balance = Decimal(string: model.balanceField.enteredValue)!
+                    try myBank.deposit(amount: balance, to: id)
+                    output = "£\(balance) deposited to id: \(id)"
+                    
+                } catch BankingEngine.OperationError.accountNotFound {
+                    output = "Deposit - Error: account not found"
+                } catch BankingEngine.OperationError.invalidDeposit {
+                        output = "Deposit - Error: invalid deposit"
+                } catch is BankingEngine.OperationError {
+                    output = "Deposit - Error: BankingEngine.OperationError"
+                } catch {
+                    output = "Deposit - Some other error"
                 }
+            
             }
             .buttonStyle(BorderedButtonStyle())
+            .disabled(!(model.isIdValid && model.isBalanceValid))
             
             Text(output)
+        }
+        .onAppear {
+            model.createIdValidationSubscription()
+            model.createBalanceValidationSubscription()
         }
     }
 }
 
 struct WithdrawalView: View {
+    @StateObject private var model = Model()
     @State var output = ""
     
-    @State var myId = InputVar(name: "id")
-    @State var myAmount = InputVar(name: "amount")
-        
     var body: some View {
         VStack {
-            
             List {
-                TextField("Enter source id", text: $myId.enteredValue)
-                TextField("Enter amount", text: $myAmount.enteredValue)
+                HStack {
+                    TextField("Enter source id", text: $model.idField.enteredValue)
+                    CrossOrTickMark(isCorrectEntry: model.isIdValid)
+                }
+                
+                HStack {
+                    TextField("Enter amount", text: $model.balanceField.enteredValue)
+                    CrossOrTickMark(isCorrectEntry: model.isBalanceValid)
+                }
             }
             
             Button("Enter inputs") {
-                let id: Int? = Int(myId.enteredValue)
-                let amount: Decimal? = Decimal(string: myAmount.enteredValue)
-    
-                if (id == nil) || (amount == nil) {
-                    output = "enter again"
-                } else {
-                    do {
-                        try myBank.withdrawal(amount: amount!, from: id!)
-                        output = "amount withdrawn"
-                    } catch {
-                        output = "withdrawal threw some error"
-                    }
+                do {
+                    let id = Int(model.idField.enteredValue)!
+                    let balance = Decimal(string: model.balanceField.enteredValue)!
+                    try myBank.withdrawal(amount: balance, from: id)
+                    output = "£\(balance) withdrawn from id: \(id)"
+                    
+                } catch BankingEngine.OperationError.accountNotFound {
+                    output = "Withdrawal - Error: account not found"
+                } catch BankingEngine.OperationError.invalidWithdrawl {
+                        output = "Withdrawal - Error: invalid deposit"
+                } catch is BankingEngine.OperationError {
+                    output = "Withdrawal - Error: BankingEngine.OperationError"
+                } catch {
+                    output = "Withdrawal - Some other error"
                 }
+            
             }
             .buttonStyle(BorderedButtonStyle())
+            .disabled(!(model.isIdValid && model.isBalanceValid))
             
             Text(output)
+        }
+        .onAppear {
+            model.createIdValidationSubscription()
+            model.createBalanceValidationSubscription()
         }
     }
 }
 
 struct TransferView: View {
+    @StateObject private var model = Model()
     @State var output = ""
     
-    @State var mySourceId = InputVar(name: "soureId")
-    @State var myDestinationId = InputVar(name: "destinationId")
-    @State var myAmount = InputVar(name: "amount")
-        
     var body: some View {
         VStack {
-            
             List {
-                TextField("Enter source id", text: $mySourceId.enteredValue)
-                TextField("Enter destination id", text: $myDestinationId.enteredValue)
-                TextField("Enter amount", text: $myAmount.enteredValue)
+                HStack {
+                    TextField("Enter source id", text: $model.idField.enteredValue)
+                    CrossOrTickMark(isCorrectEntry: model.isIdValid)
+                }
+                
+                HStack {
+                    TextField("Enter destination id", text: $model.id2Field.enteredValue)
+                    CrossOrTickMark(isCorrectEntry: model.isId2Valid)
+                }
+                
+                HStack {
+                    TextField("Enter amount", text: $model.balanceField.enteredValue)
+                    CrossOrTickMark(isCorrectEntry: model.isBalanceValid)
+                }
             }
             
             Button("Enter inputs") {
-                let sourceId: Int? = Int(mySourceId.enteredValue)
-                let destinationId: Int? = Int(myDestinationId.enteredValue)
-                let amount: Decimal? = Decimal(string: myAmount.enteredValue)
-    
-                if (sourceId == nil) || (destinationId == nil) || (amount == nil) {
-                    output = "enter again"
-                } else {
-                    do {
-                        try myBank.transfer(amount: amount!, from: sourceId!, to: destinationId!)
-                        output = "amount transfered"
-                    } catch {
-                        output = "transfer threw some error"
-                    }
+                do {
+                    let id = Int(model.idField.enteredValue)!
+                    let id2 = Int(model.id2Field.enteredValue)!
+                    let balance = Decimal(string: model.balanceField.enteredValue)!
+                    
+                    try myBank.transfer(amount: balance, from: id, to: id2)
+                    output = "£\(balance) transfered from id: \(id) to id: \(id2)"
+                    
+                } catch BankingEngine.OperationError.accountNotFound {
+                    output = "Transfer - Error: account not found"
+                } catch BankingEngine.OperationError.invalidDeposit {
+                        output = "Transfer - Error: invalid deposit"
+                } catch BankingEngine.OperationError.invalidWithdrawl {
+                        output = "Transfer - Error: invalid withdrawal"
+                } catch BankingEngine.OperationError.genericError {
+                        output = "Transfer - Error: can't transfer to the same id"
+                } catch is BankingEngine.OperationError {
+                    output = "Transfer - Error: BankingEngine.OperationError"
+                } catch {
+                    output = "Transfer - Some other error"
                 }
+            
             }
             .buttonStyle(BorderedButtonStyle())
+            .disabled(!(model.isIdValid && model.isId2Valid && model.isBalanceValid))
             
             Text(output)
+        }
+        .onAppear {
+            model.createIdValidationSubscription()
+            model.createId2ValidationSubscription()
+            model.createBalanceValidationSubscription()
         }
     }
 }
 
 struct RetrieveTransactionsView: View {
+    @StateObject private var model = Model()
     @State var output = ""
     
-    @State var myId = InputVar(name: "id")
-
     var body: some View {
         VStack {
-            
             List {
-                TextField("Enter id", text: $myId.enteredValue)
+                HStack {
+                    TextField("Enter id", text: $model.idField.enteredValue)
+                    CrossOrTickMark(isCorrectEntry: model.isIdValid)
+                }
             }
             
             Button("Enter input") {
-                let id: Int? = Int(myId.enteredValue)
-
-                if (id == nil) {
-                    output = "enter again"
-                } else {
-
-                    do {
-                        // need this to be readable
-                        try output = "transactions: \(myBank.retrieveTransactions(accountId: id!))"
-//                    } catch BankingEngine.OperationError.accountNotFound {
-//                        output = "Error: accound not found"
-//                    } catch is BankingEngine.OperationError {
-//                        output = "Error: BankingEngine.OperationError"
-                    } catch {
-                        output = "Some other error"
-                    }
+                do {
+                    let id = Int(model.idField.enteredValue)!
+                    let transactions = try myBank.retrieveTransactions(accountId: id)
+                    output = "\(transactions)"
+                    
+                } catch BankingEngine.OperationError.noTransactionsFound {
+                    output = "LogTransactions - Error: no transactions found"
+                } catch is BankingEngine.OperationError {
+                    output = "LogTransactions - Error: BankingEngine.OperationError"
+                } catch {
+                    output = "LogTransactions - Some other error"
                 }
+            
             }
             .buttonStyle(BorderedButtonStyle())
-            
-            Text(output)
+            .disabled(!(model.isIdValid))
+            ScrollView {
+                Text(output)
+            }
+        }
+        .onAppear {
+            model.createIdValidationSubscription()
         }
     }
 }
-
-
 
 struct ContentView: View {
     
@@ -506,33 +482,36 @@ struct ContentView: View {
                 NavigationLink(destination: CreateAccountView()) {
                     Text("Preview for create account")
                 }
+                .navigationTitle("Create account")
                 NavigationLink(destination: GetAccountView()) {
                     Text("Preview for get account")
                 }
+                .navigationTitle("Get account")
                 NavigationLink(destination: GetBalanceView()) {
                     Text("Preview for get balance")
                 }
+                .navigationTitle("Get balance")
                 NavigationLink(destination: DepositView()) {
                     Text("Preview for deposit")
                 }
+                .navigationTitle("Deposit")
                 NavigationLink(destination: WithdrawalView()) {
                     Text("Preview for withdrawl")
                 }
+                .navigationTitle("Withdrawal")
                 NavigationLink(destination: TransferView()) {
                     Text("Preview for transfer")
                 }
+                .navigationTitle("Transfer")
                 NavigationLink(destination: RetrieveTransactionsView()) {
                     Text("Preview for retrieve transactions")
                 }
+                .navigationTitle("Recent transactions")
                     
-                    
-                
             }
             .navigationTitle("Function list")
         }
     }
-    
-    
 }
 
 #Preview {
