@@ -4,6 +4,7 @@ public class BankingEngine {
     // objects
     public enum OperationError: Error {
         case accountNotFound
+        case invalidId
         case invalidDeposit
         case invalidWithdrawl
         case genericError
@@ -36,8 +37,12 @@ public class BankingEngine {
     private var transactions: [Transaction] = []
     
     // methods
-    public func createAccount(id: Account.ID, name: String, balance: Decimal) {
-        accounts[id] = Account(id: id, name: name, balance: balance)
+    public func createAccount(id: Account.ID, name: String, balance: Decimal) throws {
+        if let _ = accounts[id] {
+            throw OperationError.invalidId
+        } else {
+            accounts[id] = Account(id: id, name: name, balance: balance)
+        }
     }
     
     public func getAccount(for id: Account.ID) throws -> Account {

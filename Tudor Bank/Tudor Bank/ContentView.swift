@@ -158,6 +158,7 @@ struct CreateAccountView: View {
     
     var body: some View {
         VStack {
+            Text("Create account")
             List {
                 HStack {
                     TextField("Enter id", text: $model.idField.enteredValue)
@@ -180,14 +181,23 @@ struct CreateAccountView: View {
                 let name = model.nameField.enteredValue
                 let balance = Decimal(string: model.balanceField.enteredValue)!
                 
-                myBank.createAccount(id: id, name: name, balance: balance)
-                output = "Account created"
+                do {
+                    try myBank.createAccount(id: id, name: name, balance: balance)
+                    output = "Account created"
+                } catch BankingEngine.OperationError.invalidId {
+                    output = "CreateAccount - Error: account already exists"
+                } catch is BankingEngine.OperationError {
+                    output = "CreateAccount - Error: BankingEngine.OperationError"
+                } catch {
+                    output = "CreateAccount - Some other error"
+                }
             
             }
             .buttonStyle(BorderedButtonStyle())
             .disabled(!(model.isIdValid && model.isNameValid && model.isBalanceValid))
             
             Text(output)
+                .padding(20)
         }
         .onAppear {
             model.createIdValidationSubscription()
@@ -204,6 +214,7 @@ struct GetAccountView: View {
     
     var body: some View {
         VStack {
+            Text("Get account")
             List {
                 HStack {
                     TextField("Enter id", text: $model.idField.enteredValue)
@@ -230,6 +241,7 @@ struct GetAccountView: View {
             .disabled(!(model.isIdValid))
             
             Text(output)
+                .padding(20)
         }
         .onAppear {
             model.createIdValidationSubscription()
@@ -243,6 +255,7 @@ struct GetBalanceView: View {
     
     var body: some View {
         VStack {
+            Text("Get balance")
             List {
                 HStack {
                     TextField("Enter id", text: $model.idField.enteredValue)
@@ -269,6 +282,7 @@ struct GetBalanceView: View {
             .disabled(!(model.isIdValid))
             
             Text(output)
+                .padding(20)
         }
         .onAppear {
             model.createIdValidationSubscription()
@@ -283,6 +297,7 @@ struct DepositView: View {
     
     var body: some View {
         VStack {
+            Text("Deposit")
             List {
                 HStack {
                     TextField("Enter destination id", text: $model.idField.enteredValue)
@@ -317,6 +332,7 @@ struct DepositView: View {
             .disabled(!(model.isIdValid && model.isBalanceValid))
             
             Text(output)
+                .padding(20)
         }
         .onAppear {
             model.createIdValidationSubscription()
@@ -331,6 +347,7 @@ struct WithdrawalView: View {
     
     var body: some View {
         VStack {
+            Text("Withdrawal")
             List {
                 HStack {
                     TextField("Enter source id", text: $model.idField.enteredValue)
@@ -365,6 +382,7 @@ struct WithdrawalView: View {
             .disabled(!(model.isIdValid && model.isBalanceValid))
             
             Text(output)
+                .padding(20)
         }
         .onAppear {
             model.createIdValidationSubscription()
@@ -379,6 +397,7 @@ struct TransferView: View {
     
     var body: some View {
         VStack {
+            Text("Transfer")
             List {
                 HStack {
                     TextField("Enter source id", text: $model.idField.enteredValue)
@@ -424,6 +443,7 @@ struct TransferView: View {
             .disabled(!(model.isIdValid && model.isId2Valid && model.isBalanceValid))
             
             Text(output)
+                .padding(20)
         }
         .onAppear {
             model.createIdValidationSubscription()
@@ -439,6 +459,7 @@ struct RetrieveTransactionsView: View {
     
     var body: some View {
         VStack {
+            Text("Retrieve transactions")
             List {
                 HStack {
                     TextField("Enter id", text: $model.idField.enteredValue)
@@ -450,7 +471,9 @@ struct RetrieveTransactionsView: View {
                 do {
                     let id = Int(model.idField.enteredValue)!
                     let transactions = try myBank.retrieveTransactions(accountId: id)
-                    output = "\(transactions)"
+                    for i in 0..<transactions.count {
+                        output += "TRANSACTION \(i+1): \(transactions[i])\n"
+                    }
                     
                 } catch BankingEngine.OperationError.noTransactionsFound {
                     output = "LogTransactions - Error: no transactions found"
@@ -465,6 +488,7 @@ struct RetrieveTransactionsView: View {
             .disabled(!(model.isIdValid))
             ScrollView {
                 Text(output)
+                    .padding(20)
             }
         }
         .onAppear {
@@ -482,35 +506,27 @@ struct ContentView: View {
                 NavigationLink(destination: CreateAccountView()) {
                     Text("Preview for create account")
                 }
-                .navigationTitle("Create account")
                 NavigationLink(destination: GetAccountView()) {
                     Text("Preview for get account")
                 }
-                .navigationTitle("Get account")
                 NavigationLink(destination: GetBalanceView()) {
                     Text("Preview for get balance")
                 }
-                .navigationTitle("Get balance")
                 NavigationLink(destination: DepositView()) {
                     Text("Preview for deposit")
                 }
-                .navigationTitle("Deposit")
                 NavigationLink(destination: WithdrawalView()) {
                     Text("Preview for withdrawl")
                 }
-                .navigationTitle("Withdrawal")
                 NavigationLink(destination: TransferView()) {
                     Text("Preview for transfer")
                 }
-                .navigationTitle("Transfer")
                 NavigationLink(destination: RetrieveTransactionsView()) {
                     Text("Preview for retrieve transactions")
                 }
-                .navigationTitle("Recent transactions")
-                    
             }
-            .navigationTitle("Function list")
         }
+        .navigationTitle("Function list")
     }
 }
 
