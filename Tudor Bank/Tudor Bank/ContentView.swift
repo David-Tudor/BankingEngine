@@ -471,6 +471,8 @@ struct RetrieveTransactionsView: View {
                 do {
                     let id = Int(model.idField.enteredValue)!
                     let transactions = try myBank.retrieveTransactions(accountId: id)
+                    
+                    output = ""
                     for i in 0..<transactions.count {
                         output += "TRANSACTION \(i+1): \(transactions[i])\n"
                     }
