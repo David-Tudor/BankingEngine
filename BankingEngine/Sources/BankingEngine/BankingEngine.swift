@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 public class BankingEngine {
     // objects
@@ -16,14 +17,15 @@ public class BankingEngine {
         case debt
     }
     
-    public struct Transaction: Equatable {
+    public struct Transaction: Equatable, Identifiable, Hashable {
         public typealias ID = UUID
         
         public let amount: Decimal
         public let date: Date
         public let sourceAccount: Account.ID?
         public let destinationAccount: Account.ID?
-        public let id: Transaction.ID
+        // is is good here or set when called?
+        public let id = UUID()//: Transaction.ID
         public var type: TransactionType?
         
         func isRecent() -> Bool {
@@ -35,6 +37,7 @@ public class BankingEngine {
     // properties
     private var accounts: [Account.ID: Account] = [:]
     private var transactions: [Transaction] = []
+    public var allTransactions: CurrentValueSubject<[Transaction], Never> = .init([])
     
     // methods
     public func createAccount(id: Account.ID, name: String, balance: Decimal) throws {
@@ -112,9 +115,10 @@ public class BankingEngine {
     // this is only used by deposit, withdrawal and transfer
     private func logTransaction(amount: Decimal, from sourceId: Account.ID?, to destinationId: Account.ID?) {
         
-        let transaction = Transaction(amount: amount, date: Date(), sourceAccount: sourceId, destinationAccount: destinationId, id: UUID())
+        let transaction = Transaction(amount: amount, date: Date(), sourceAccount: sourceId, destinationAccount: destinationId)//, id: UUID())
         
         transactions.append(transaction)
+        allTransactions.send(transactions)
     }
     
     public func retrieveTransactions(accountId: Account.ID) throws -> [Transaction] {
@@ -141,8 +145,7 @@ public class BankingEngine {
         return retrievedTransactions
     }
     
-    
-    
+
     public init() {
     }
 }
