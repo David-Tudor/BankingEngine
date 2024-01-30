@@ -64,6 +64,14 @@ public class BankingEngine {
         throw OperationError.accountNotFound
     }
     
+    public func changeAccountName(for id: Account.ID, to newName: String) throws {
+        if let account = accounts[id] {
+            account.name = newName
+        }
+        
+        throw OperationError.accountNotFound
+    }
+    
     public func deposit(amount: Decimal, to id: Account.ID, shouldLogTransaction: Bool = true) throws {
         guard amount >= 0.0 else {
             throw OperationError.invalidDeposit
@@ -154,7 +162,7 @@ public class Account {
     public typealias ID = Int
     
     public let id: Account.ID
-    public let name: String
+    public var name: String
     public var balance: Decimal
 
     init(id: Account.ID, name: String, balance: Decimal) {

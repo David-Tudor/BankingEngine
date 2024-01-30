@@ -7,6 +7,7 @@
 import SwiftUI
 import BankingEngine
 import Combine
+import PhotosUI
 
 let myBank = BankingEngine()
 
@@ -535,6 +536,7 @@ struct SendMoneyView: View {
             Text("Send money")
                 .foregroundColor(Color(colBlack))
                 .font(.system(size: 24, weight: .bold))
+            
             VStack {
                 ZStack {
                     RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
@@ -567,8 +569,7 @@ struct SendMoneyView: View {
             .frame(height: 80)
             Spacer()
             
-            // NEXT: MAKE THIS BUTTON BETTER !!!!!!
-            Button("Enter inputs") {
+            Button("Make transaction") {
                 do {
                     let id = Int(model.idField.enteredValue)!
                     let balance = Decimal(string: model.balanceField.enteredValue)!
@@ -579,19 +580,20 @@ struct SendMoneyView: View {
                 } catch BankingEngine.OperationError.accountNotFound {
                     output = "Transfer - Error: account not found"
                 } catch BankingEngine.OperationError.invalidDeposit {
-                        output = "Transfer - Error: invalid deposit"
+                    output = "Transfer - Error: invalid deposit"
                 } catch BankingEngine.OperationError.invalidWithdrawl {
-                        output = "Transfer - Error: invalid withdrawal"
+                    output = "Transfer - Error: invalid withdrawal"
                 } catch BankingEngine.OperationError.genericError {
-                        output = "Transfer - Error: can't transfer to the same id"
+                    output = "Transfer - Error: can't transfer to the same id"
                 } catch is BankingEngine.OperationError {
                     output = "Transfer - Error: BankingEngine.OperationError"
                 } catch {
                     output = "Transfer - Some other error"
                 }
             }
-            .buttonStyle(BorderedButtonStyle())
+            .buttonStyle(.borderedProminent)
             .disabled(!(model.isIdValid && model.isBalanceValid))
+            .frame(maxWidth: .infinity)
             
             Text(output)
                 .padding(20)
@@ -689,15 +691,205 @@ struct RetrieveTransactionsView: View {
     }
 }
 
+struct PhotosSelector: View {
+    @State var selectedItems: [PhotosPickerItem] = []
+
+
+    var body: some View {
+        PhotosPicker(selection: $selectedItems,
+                     matching: .images) {
+            Text("Select Multiple Photos")
+        }
+    }
+}
+
+struct MyAccountView: View {
+    @StateObject private var model = Model()
+    @State var output = ""
+    @State var isEditable = false
+    @State var myName: String
+    @State var nameHolder: String
+    
+    let myId: Int
+    
+    
+    let cornerSize = 10
+    let smallerText: CGFloat = 16
+    let colBlack: UInt = 0x000000
+    let colWhite: UInt = 0xFFFFFF
+    let colBlue: UInt = 0x5746D2
+    let colLightBlue: UInt = 0xEEEBFF
+    let colPurple: UInt = 0x82779F
+    let colOrange: UInt = 0xFFA115
+    
+    init(myId: Int, myName: String) {
+        self.myId = myId
+        self.myName = myName
+        self.nameHolder = myName
+    }
+    
+//    @Published var imageSelection: PhotosPickerItem? = nil {
+//        didSet {
+//            if let imageSelection {
+//                let progress = loadTransferable(from: imageSelection)
+//                imageState = .loading(progress)
+//            } else {
+//                imageState = .empty
+//            }
+//        }
+//    }
+//    func loadTransferable(from imageSelection: PhotosPickerItem) -> Progress {
+//        return imageSelection.loadTransferable(type: Image.self) { result in
+//            DispatchQueue.main.async {
+//                guard imageSelection == self.imageSelection else { return }
+//                switch result {
+//                case .success(let image?):
+//                    // Handle the success case with the image.
+//                case .success(nil):
+//                    // Handle the success case with an empty value.
+//                case .failure(let error):
+//                    // Handle the failure case with the provided error.
+//                }
+//            }
+//        }
+//    }
+    
+
+    
+    var body: some View {
+        VStack {
+            Text("My account")
+                .foregroundColor(Color(colBlack))
+                .font(.system(size: 24, weight: .bold))
+            
+            // add my profile picture selector
+            Image(systemName: "person.circle.fill")
+                .foregroundColor(Color(colBlue))
+                .font(.system(size: 100))
+            
+//            CircularProfileImage(imageState: viewModel.imageState)
+//                .overlay(alignment: .bottomTrailing) {
+//                    PhotosPicker(selection: $viewModel.imageSelection,
+//                                 matching: .images,
+//                                 photoLibrary: .shared()) {
+//                        Image(systemName: "pencil.circle.fill")
+//                            .symbolRenderingMode(.multicolor)
+//                            .font(.system(size: 30))
+//                            .foregroundColor(.accentColor)
+//                    }
+//                    .buttonStyle(.borderless)
+//                }
+//            
+            VStack {
+                ZStack {
+                    RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
+                        .fill(Color(colLightBlue))
+                    HStack {
+                        Text("Name")
+                            .foregroundColor(Color(colPurple))
+                            .font(.system(size: 16, weight: .medium))
+                            .padding(5)
+                        TextField(myName, text: $nameHolder)
+                            .foregroundColor(Color(colPurple))
+                            .font(.system(size: 16, weight: .medium))
+                            .padding(5)
+                            .disabled(!isEditable)
+                    }
+                }
+            }
+            .frame(height: 20)
+            
+            HStack {
+                Spacer()
+                if isEditable {
+                    HStack {
+                        VStack {
+                            ZStack {
+                                RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
+                                    .fill(Color(colLightBlue))
+                                HStack {
+                                    Button("Cancel") {
+                                        isEditable = !isEditable
+                                        nameHolder = myName
+                                    }
+                                }
+                            }
+                        }
+                        .frame(width: 90, height: 20)
+                        .padding(5)
+                        
+                        VStack {
+                            ZStack {
+                                RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
+                                    .fill(Color(colLightBlue))
+                                HStack {
+                                    Button("Confirm") {
+                                        isEditable = !isEditable
+                                        do {
+                                            try myBank.changeAccountName(for: myId, to: nameHolder)
+                                        } catch {
+                                            
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .frame(width: 90, height: 20)
+                        .padding(5)
+                    }
+                } else {
+                    VStack {
+                        ZStack {
+                            RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
+                                .fill(Color(colLightBlue))
+                            HStack {
+                                Button("Edit") {
+                                    isEditable = !isEditable
+                                }
+                            }
+                        }
+                    }
+                    .frame(width: 90, height: 20)
+                    .padding(5)
+                    
+                }
+            }
+            
+            Spacer()
+            
+            VStack {
+                ZStack {
+                    RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
+                        .fill(Color(colLightBlue))
+                    HStack {
+                        Text("ID")
+                            .foregroundColor(Color(colPurple))
+                            .font(.system(size: 16, weight: .medium))
+                            .padding(5)
+                        Text("\(myId)")
+                            .foregroundColor(Color(colPurple))
+                            .font(.system(size: 16, weight: .medium))
+                            .padding(5)
+                
+                    }
+                }
+            }
+            .frame(height: 30)
+        }
+        .onAppear {
+            model.createIdValidationSubscription()
+            
+            model.createBalanceValidationSubscription()
+        }
+    }
+}
+
 
 struct ContentView: View {
     let myId = 123
     @State var myName = ""
     @State var myBalance: Decimal = 0.0
     @State var isLoaded = false
-    //    let myId = 123
-    //    let myName = "David"
-    //    let myBalance = 10.00
     
     let colBlack: UInt = 0x000000
     let colGrey: UInt = 0x4A4A4D
@@ -711,7 +903,6 @@ struct ContentView: View {
             let account = try myBank.getAccount(for: myId)
             myBalance = account.balance
             myName = account.name
-            print(myBalance)
         } catch {
             
         }
@@ -725,7 +916,7 @@ struct ContentView: View {
         NavigationView {
             GeometryReader { geometry in
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Hi \(myName)")
+                    Text("Hi \(myName),")
                         .foregroundColor(Color(colBlack))
                         .font(.system(size: 28, weight: .bold))
                         .padding(EdgeInsets())
@@ -801,7 +992,7 @@ struct ContentView: View {
                         
                         HStack(spacing: boxSpacing){
                             // Account
-                            NavigationLink(destination: RetrieveTransactionsView(myId: myId)) {
+                            NavigationLink(destination: MyAccountView(myId: myId, myName: myName)) {
                                 ZStack (alignment: .topLeading) {
                                     RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
                                         .fill(Color(colBack3))
