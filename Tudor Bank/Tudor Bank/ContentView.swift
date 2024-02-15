@@ -7,7 +7,7 @@
 import SwiftUI
 import BankingEngine
 import Combine
-import PhotosUI
+//import PhotosUI
 
 let myBank = BankingEngine()
 
@@ -512,377 +512,9 @@ struct BasicRetrieveTransactionsView: View {
     }
 }
 
-struct SendMoneyView: View {
-    @StateObject private var model = Model()
-    @State var output = ""
-    
-    let myId: Int
-    
-    let cornerSize = 10
-    let smallerText: CGFloat = 16
-    let colBlack: UInt = 0x000000
-    let colWhite: UInt = 0xFFFFFF
-    let colBlue: UInt = 0x5746D2
-    let colLightBlue: UInt = 0xEEEBFF
-    let colPurple: UInt = 0x82779F
-    let colOrange: UInt = 0xFFA115
-    
-    init(myId: Int) {
-        self.myId = myId
-    }
-    
-    var body: some View {
-        VStack {
-            Text("Send money")
-                .foregroundColor(Color(colBlack))
-                .font(.system(size: 24, weight: .bold))
-            
-            VStack {
-                ZStack {
-                    RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
-                        .fill(Color(colLightBlue))
-                    HStack {
-                        TextField("Enter destination id", text: $model.idField.enteredValue)
-                            .foregroundColor(Color(colPurple))
-                            .font(.system(size: 16, weight: .medium))
-                            .padding(5)
-                        CrossOrTickMark(isCorrectEntry: model.isIdValid)
-                            .padding(5)
-                    }
-                }
-                ZStack {
-                    RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
-                        .fill(Color(colLightBlue))
-                    HStack {
-                        Text("£")
-                            .foregroundColor(Color(colPurple))
-                            .font(.system(size: 16, weight: .medium))
-                            .padding(5)
-                        TextField("Enter amount", text: $model.balanceField.enteredValue)
-                            .foregroundColor(Color(colPurple))
-                            .font(.system(size: 16, weight: .medium))
-                        CrossOrTickMark(isCorrectEntry: model.isBalanceValid)
-                            .padding(5)
-                    }
-                }
-            }
-            .frame(height: 80)
-            Spacer()
-            
-            Button("Make transaction") {
-                do {
-                    let id = Int(model.idField.enteredValue)!
-                    let balance = Decimal(string: model.balanceField.enteredValue)!
-                    
-                    try myBank.transfer(amount: balance, from: myId, to: id)
-                    output = "£\(balance) transfered from id: \(myId) to id: \(id)"
-                    
-                } catch BankingEngine.OperationError.accountNotFound {
-                    output = "Transfer - Error: account not found"
-                } catch BankingEngine.OperationError.invalidDeposit {
-                    output = "Transfer - Error: invalid deposit"
-                } catch BankingEngine.OperationError.invalidWithdrawl {
-                    output = "Transfer - Error: invalid withdrawal"
-                } catch BankingEngine.OperationError.genericError {
-                    output = "Transfer - Error: can't transfer to the same id"
-                } catch is BankingEngine.OperationError {
-                    output = "Transfer - Error: BankingEngine.OperationError"
-                } catch {
-                    output = "Transfer - Some other error"
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(!(model.isIdValid && model.isBalanceValid))
-            .frame(maxWidth: .infinity)
-            
-            Text(output)
-                .padding(20)
-        }
-        .onAppear {
-            model.createIdValidationSubscription()
-            
-            model.createBalanceValidationSubscription()
-        }
-    }
-}
-
-struct RetrieveTransactionsView: View {
-    @StateObject private var model = Model()
-    @State var output = ""
-    @State var transactions: Array<BankingEngine.Transaction> = []
-    
-    let myId: Int
-    let cornerSize = 15
-    let biggerText: CGFloat = 18
-    let smallerText: CGFloat = 16
-    let colBlack: UInt = 0x000000
-    let colGrey: UInt = 0x4A4A4D
-    let colBlue1: UInt = 0xDBD8FF
-    let colBlue2: UInt = 0xEEEBFF
-
-    func buildListTitle(with myString: String) -> some View {
-        Text(myString)
-            .foregroundColor(Color(colBlack))
-            .font(.system(size: biggerText, weight: .bold))
-    }
-    
-    func buildListItem(with transaction: BankingEngine.Transaction, isDarkBlue: Bool) -> some View {
-        ZStack (alignment: .topLeading) {
-            RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
-                .fill(Color(isDarkBlue ? colBlue1 : colBlue2))
-            
-            HStack {
-                VStack(alignment: .leading) {
-                    switch (transaction.sourceAccount, transaction.destinationAccount) {
-                    case (nil, myId):
-                        buildListTitle(with: "Deposit")
-                    case (myId, nil):
-                        buildListTitle(with: "Withdrawal")
-                    case (let account, myId):
-                        buildListTitle(with: "Transfer from \(account!)")
-                    case (myId, let account):
-                        buildListTitle(with: "Transfer to \(account!)")
-                    case (_, _):
-                        buildListTitle(with: "Unknown")
-                    }
-                    Text("\(transaction.date.formatted(date: .abbreviated, time: .shortened))")
-                        .foregroundColor(Color(colGrey))
-                        .font(.system(size: smallerText, weight: .regular))
-                }
-                .padding(.horizontal, 30)
-                .frame(height: 80)
-                Spacer()
-                Text((transaction.type == .credit ? "+" : "-") + transaction.amount.formatted(.currency(code: "GBP")))
-                    .padding(10)
-            }
-        }
-        .frame(height: 80)
-    }
-    
-    init(myId: Int) {
-        self.myId = myId
-    }
-
-    var body: some View {
-        GeometryReader { geometry in
-            VStack {
-                Text("Recent transactions")
-                    .foregroundColor(Color(colBlack))
-                    .font(.system(size: 28, weight: .bold))
-                    .padding(EdgeInsets())
-                // if no error message i.e there are transactions
-                if transactions.count != 0 {
-                    ScrollView {
-                        VStack {
-                            ForEach(0..<transactions.count , id: \.self) { i in
-                                buildListItem(with: transactions[i], isDarkBlue: (i % 2) == 0)
-                            }
-                        }
-                    }
-                } else {
-                    Text("No transactions found")
-                }
-            }
-        }
-        .onReceive(myBank.allTransactions, perform: { _ in
-            transactions = (try? myBank.retrieveTransactions(accountId: myId)) ?? []
-            
-        })
-    }
-}
-
-struct PhotosSelector: View {
-    @State var selectedItems: [PhotosPickerItem] = []
 
 
-    var body: some View {
-        PhotosPicker(selection: $selectedItems,
-                     matching: .images) {
-            Text("Select Multiple Photos")
-        }
-    }
-}
 
-struct MyAccountView: View {
-    @StateObject private var model = Model()
-    @State var output = ""
-    @State var isEditable = false
-    @State var myName: String
-    @State var nameHolder: String
-    
-    let myId: Int
-    
-    
-    let cornerSize = 10
-    let smallerText: CGFloat = 16
-    let colBlack: UInt = 0x000000
-    let colWhite: UInt = 0xFFFFFF
-    let colBlue: UInt = 0x5746D2
-    let colLightBlue: UInt = 0xEEEBFF
-    let colPurple: UInt = 0x82779F
-    let colOrange: UInt = 0xFFA115
-    
-    init(myId: Int, myName: String) {
-        self.myId = myId
-        self.myName = myName
-        self.nameHolder = myName
-    }
-    
-//    @Published var imageSelection: PhotosPickerItem? = nil {
-//        didSet {
-//            if let imageSelection {
-//                let progress = loadTransferable(from: imageSelection)
-//                imageState = .loading(progress)
-//            } else {
-//                imageState = .empty
-//            }
-//        }
-//    }
-//    func loadTransferable(from imageSelection: PhotosPickerItem) -> Progress {
-//        return imageSelection.loadTransferable(type: Image.self) { result in
-//            DispatchQueue.main.async {
-//                guard imageSelection == self.imageSelection else { return }
-//                switch result {
-//                case .success(let image?):
-//                    // Handle the success case with the image.
-//                case .success(nil):
-//                    // Handle the success case with an empty value.
-//                case .failure(let error):
-//                    // Handle the failure case with the provided error.
-//                }
-//            }
-//        }
-//    }
-    
-
-    
-    var body: some View {
-        VStack {
-            Text("My account")
-                .foregroundColor(Color(colBlack))
-                .font(.system(size: 24, weight: .bold))
-            
-            // add my profile picture selector
-            Image(systemName: "person.circle.fill")
-                .foregroundColor(Color(colBlue))
-                .font(.system(size: 100))
-            
-//            CircularProfileImage(imageState: viewModel.imageState)
-//                .overlay(alignment: .bottomTrailing) {
-//                    PhotosPicker(selection: $viewModel.imageSelection,
-//                                 matching: .images,
-//                                 photoLibrary: .shared()) {
-//                        Image(systemName: "pencil.circle.fill")
-//                            .symbolRenderingMode(.multicolor)
-//                            .font(.system(size: 30))
-//                            .foregroundColor(.accentColor)
-//                    }
-//                    .buttonStyle(.borderless)
-//                }
-//            
-            VStack {
-                ZStack {
-                    RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
-                        .fill(Color(colLightBlue))
-                    HStack {
-                        Text("Name")
-                            .foregroundColor(Color(colPurple))
-                            .font(.system(size: 16, weight: .medium))
-                            .padding(5)
-                        TextField(myName, text: $nameHolder)
-                            .foregroundColor(Color(colPurple))
-                            .font(.system(size: 16, weight: .medium))
-                            .padding(5)
-                            .disabled(!isEditable)
-                    }
-                }
-            }
-            .frame(height: 20)
-            
-            HStack {
-                Spacer()
-                if isEditable {
-                    HStack {
-                        VStack {
-                            ZStack {
-                                RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
-                                    .fill(Color(colLightBlue))
-                                HStack {
-                                    Button("Cancel") {
-                                        isEditable = !isEditable
-                                        nameHolder = myName
-                                    }
-                                }
-                            }
-                        }
-                        .frame(width: 90, height: 20)
-                        .padding(5)
-                        
-                        VStack {
-                            ZStack {
-                                RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
-                                    .fill(Color(colLightBlue))
-                                HStack {
-                                    Button("Confirm") {
-                                        isEditable = !isEditable
-                                        do {
-                                            try myBank.changeAccountName(for: myId, to: nameHolder)
-                                        } catch {
-                                            
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        .frame(width: 90, height: 20)
-                        .padding(5)
-                    }
-                } else {
-                    VStack {
-                        ZStack {
-                            RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
-                                .fill(Color(colLightBlue))
-                            HStack {
-                                Button("Edit") {
-                                    isEditable = !isEditable
-                                }
-                            }
-                        }
-                    }
-                    .frame(width: 90, height: 20)
-                    .padding(5)
-                    
-                }
-            }
-            
-            Spacer()
-            
-            VStack {
-                ZStack {
-                    RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
-                        .fill(Color(colLightBlue))
-                    HStack {
-                        Text("ID")
-                            .foregroundColor(Color(colPurple))
-                            .font(.system(size: 16, weight: .medium))
-                            .padding(5)
-                        Text("\(myId)")
-                            .foregroundColor(Color(colPurple))
-                            .font(.system(size: 16, weight: .medium))
-                            .padding(5)
-                
-                    }
-                }
-            }
-            .frame(height: 30)
-        }
-        .onAppear {
-            model.createIdValidationSubscription()
-            
-            model.createBalanceValidationSubscription()
-        }
-    }
-}
 
 
 struct ContentView: View {
@@ -922,7 +554,7 @@ struct ContentView: View {
                         .padding(EdgeInsets())
                     
                     
-                    if myBalance > 0.0 {
+                    if myBalance >= 0.0 {
                         Text("Your balance is")
                             .font(.system(size: 16))
                             .foregroundColor(Color(colGrey))
@@ -943,7 +575,7 @@ struct ContentView: View {
                         HStack(spacing: boxSpacing) {
                             
                             // send money
-                            NavigationLink(destination: SendMoneyView(myId: myId)) {
+                            NavigationLink(destination: SendMoneyView(myId: myId).padding(.horizontal, 20)) {
                                 ZStack (alignment: .topLeading) {
                                     RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
                                         .fill(Color(colBack1))
@@ -966,7 +598,7 @@ struct ContentView: View {
                             
                             
                             // transactions
-                            NavigationLink(destination: RetrieveTransactionsView(myId: myId)) {
+                            NavigationLink(destination: RetrieveTransactionsView(myId: myId).padding(.horizontal, 20)) {
                                 ZStack (alignment: .topLeading) {
                                     RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
                                         .fill(Color(colBack2))
@@ -992,7 +624,7 @@ struct ContentView: View {
                         
                         HStack(spacing: boxSpacing){
                             // Account
-                            NavigationLink(destination: MyAccountView(myId: myId, myName: myName)) {
+                            NavigationLink(destination: MyAccountView(myId: myId, myName: myName).padding(.horizontal, 20)) {
                                 ZStack (alignment: .topLeading) {
                                     RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
                                         .fill(Color(colBack3))
@@ -1020,9 +652,8 @@ struct ContentView: View {
                     isLoaded = true
                 }
             }
+            .padding(.horizontal, 20)
         }
-        // pads outer edges
-        .padding(20)
         .onReceive(myBank.allTransactions, perform: { _ in
             if isLoaded {
                 updateAccountDetails()

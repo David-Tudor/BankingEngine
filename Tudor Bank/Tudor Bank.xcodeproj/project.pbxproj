@@ -15,6 +15,10 @@
 		636A77A62ABF0DF90078FA34 /* Tudor_BankUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636A77A52ABF0DF90078FA34 /* Tudor_BankUITests.swift */; };
 		636A77A82ABF0DF90078FA34 /* Tudor_BankUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636A77A72ABF0DF90078FA34 /* Tudor_BankUITestsLaunchTests.swift */; };
 		636A77BD2ABF15A80078FA34 /* BankingEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 636A77BC2ABF15A80078FA34 /* BankingEngine */; };
+		6382CAF92B7E612C00E1DCF5 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6382CAF82B7E612C00E1DCF5 /* ImagePicker.swift */; };
+		6382CAFB2B7E666E00E1DCF5 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6382CAFA2B7E666E00E1DCF5 /* AccountView.swift */; };
+		6382CAFD2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6382CAFC2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift */; };
+		6382CAFF2B7E671000E1DCF5 /* SendMoneyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6382CAFE2B7E671000E1DCF5 /* SendMoneyView.swift */; };
 		A95C64F02AC8258800251ECD /* ExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95C64EF2AC8258800251ECD /* ExampleView.swift */; };
 		A9AEB61D2ADC5EDC0020793B /* ExampleViewWithCombine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */; };
 /* End PBXBuildFile section */
@@ -49,6 +53,10 @@
 		636A77A52ABF0DF90078FA34 /* Tudor_BankUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tudor_BankUITests.swift; sourceTree = "<group>"; };
 		636A77A72ABF0DF90078FA34 /* Tudor_BankUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tudor_BankUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		636A77BA2ABF11270078FA34 /* BankingEngine */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = BankingEngine; path = ../BankingEngine; sourceTree = "<group>"; };
+		6382CAF82B7E612C00E1DCF5 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		6382CAFA2B7E666E00E1DCF5 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
+		6382CAFC2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetrieveTransactionsView.swift; sourceTree = "<group>"; };
+		6382CAFE2B7E671000E1DCF5 /* SendMoneyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMoneyView.swift; sourceTree = "<group>"; };
 		A95C64EF2AC8258800251ECD /* ExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleView.swift; sourceTree = "<group>"; };
 		A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewWithCombine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -106,6 +114,10 @@
 			children = (
 				636A77892ABF0DF70078FA34 /* Tudor_BankApp.swift */,
 				636A778B2ABF0DF70078FA34 /* ContentView.swift */,
+				6382CAFE2B7E671000E1DCF5 /* SendMoneyView.swift */,
+				6382CAFC2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift */,
+				6382CAF82B7E612C00E1DCF5 /* ImagePicker.swift */,
+				6382CAFA2B7E666E00E1DCF5 /* AccountView.swift */,
 				A95C64EF2AC8258800251ECD /* ExampleView.swift */,
 				A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */,
 				636A778D2ABF0DF90078FA34 /* Assets.xcassets */,
@@ -282,8 +294,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6382CAFB2B7E666E00E1DCF5 /* AccountView.swift in Sources */,
 				636A778C2ABF0DF70078FA34 /* ContentView.swift in Sources */,
+				6382CAFD2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift in Sources */,
+				6382CAFF2B7E671000E1DCF5 /* SendMoneyView.swift in Sources */,
 				636A778A2ABF0DF70078FA34 /* Tudor_BankApp.swift in Sources */,
+				6382CAF92B7E612C00E1DCF5 /* ImagePicker.swift in Sources */,
 				A95C64F02AC8258800251ECD /* ExampleView.swift in Sources */,
 				A9AEB61D2ADC5EDC0020793B /* ExampleViewWithCombine.swift in Sources */,
 			);
@@ -457,7 +473,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
@@ -493,7 +509,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
