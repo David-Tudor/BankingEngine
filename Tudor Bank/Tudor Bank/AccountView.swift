@@ -15,11 +15,9 @@ struct MyAccountView: View {
     @State var myName: String
     @State var nameHolder: String
     @State var isPickerShowing = false
-    @State var selectedImage: UIImage?
+    @State var selectedImage: UIImage
     
     let myId: Int
-    
-    
     let cornerSize = 10
     let smallerText: CGFloat = 16
     let colBlack: UInt = 0x000000
@@ -33,6 +31,15 @@ struct MyAccountView: View {
         self.myId = myId
         self.myName = myName
         self.nameHolder = myName
+        if
+            let strBase64 = UserDefaults.standard.value(forKey: "userImage") as? String,
+            let imageData = Data(base64Encoded: strBase64, options: Data.Base64DecodingOptions.ignoreUnknownCharacters)
+        {
+            selectedImage = UIImage(data: imageData)!
+        } else {
+            selectedImage = UIImage(systemName: "person.circle.fill")!
+        }
+        
     }
     
 
@@ -44,16 +51,12 @@ struct MyAccountView: View {
             
             // picture selector
             VStack {
-                if selectedImage != nil {
-                    Image(uiImage: selectedImage!)
-                        .resizable()
-                        .frame(width: 150, height: 150)
-                        .clipShape(Circle())
-                } else {
-                    Image(systemName: "person.circle.fill")
-                        .foregroundColor(Color(colBlue))
-                        .font(.system(size: 150))
-                }
+
+                Image(uiImage: selectedImage)
+                    .resizable()
+                    .frame(width: 150, height: 150)
+                    .clipShape(Circle())
+                
                 
                 Button {
                     isPickerShowing = true
@@ -64,6 +67,14 @@ struct MyAccountView: View {
             .sheet(isPresented: $isPickerShowing, onDismiss: nil) {
                 ImagePicker(selectedImage: $selectedImage, isPickerShowing: $isPickerShowing)
             }
+            .onChange(of: selectedImage) { selectedImage in
+                guard let imageData = selectedImage.pngData() else {
+                    return
+                }
+                let strBase64 = imageData.base64EncodedString(options: .lineLength64Characters)
+                UserDefaults.standard.setValue(strBase64, forKey: "userImage")
+            }
+            
 
             VStack {
                 ZStack {

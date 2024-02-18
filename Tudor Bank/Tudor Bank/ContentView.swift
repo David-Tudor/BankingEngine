@@ -7,9 +7,18 @@
 import SwiftUI
 import BankingEngine
 import Combine
-//import PhotosUI
 
 let myBank = BankingEngine()
+
+struct NavigationLazyView<Content: View>: View {
+    let build: () -> Content
+    init(_ build: @autoclosure @escaping () -> Content) {
+        self.build = build
+    }
+    var body: Content {
+        build()
+    }
+}
 
 struct CrossOrTickMark: View {
     var isCorrectEntry: Bool
@@ -575,7 +584,7 @@ struct ContentView: View {
                         HStack(spacing: boxSpacing) {
                             
                             // send money
-                            NavigationLink(destination: SendMoneyView(myId: myId).padding(.horizontal, 20)) {
+                            NavigationLink(destination: NavigationLazyView(SendMoneyView(myId: myId).padding(.horizontal, 20))) {
                                 ZStack (alignment: .topLeading) {
                                     RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
                                         .fill(Color(colBack1))
@@ -598,7 +607,7 @@ struct ContentView: View {
                             
                             
                             // transactions
-                            NavigationLink(destination: RetrieveTransactionsView(myId: myId).padding(.horizontal, 20)) {
+                            NavigationLink(destination: NavigationLazyView(RetrieveTransactionsView(myId: myId).padding(.horizontal, 20))) {
                                 ZStack (alignment: .topLeading) {
                                     RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
                                         .fill(Color(colBack2))
@@ -624,7 +633,7 @@ struct ContentView: View {
                         
                         HStack(spacing: boxSpacing){
                             // Account
-                            NavigationLink(destination: MyAccountView(myId: myId, myName: myName).padding(.horizontal, 20)) {
+                            NavigationLink(destination: NavigationLazyView(MyAccountView(myId: myId, myName: myName).padding(.horizontal, 20))) {
                                 ZStack (alignment: .topLeading) {
                                     RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
                                         .fill(Color(colBack3))

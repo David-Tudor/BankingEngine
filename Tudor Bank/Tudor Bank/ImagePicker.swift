@@ -10,7 +10,7 @@ import UIKit
 import SwiftUI
 
 struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var selectedImage: UIImage?
+    @Binding var selectedImage: UIImage
     @Binding var isPickerShowing: Bool
 
     func makeUIViewController(context: Context) -> some UIViewController {
