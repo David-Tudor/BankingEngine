@@ -39,7 +39,6 @@ struct MyAccountView: View {
         } else {
             selectedImage = UIImage(systemName: "person.circle.fill")!
         }
-        
     }
     
 
