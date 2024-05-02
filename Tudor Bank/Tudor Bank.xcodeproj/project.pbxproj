@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		63025AD12B90EE140040C201 /* PhotosModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 63025ACF2B90EE140040C201 /* PhotosModel.xcdatamodeld */; };
 		636A778A2ABF0DF70078FA34 /* Tudor_BankApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636A77892ABF0DF70078FA34 /* Tudor_BankApp.swift */; };
 		636A778C2ABF0DF70078FA34 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636A778B2ABF0DF70078FA34 /* ContentView.swift */; };
 		636A778E2ABF0DF90078FA34 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 636A778D2ABF0DF90078FA34 /* Assets.xcassets */; };
@@ -20,6 +19,7 @@
 		6382CAFB2B7E666E00E1DCF5 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6382CAFA2B7E666E00E1DCF5 /* AccountView.swift */; };
 		6382CAFD2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6382CAFC2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift */; };
 		6382CAFF2B7E671000E1DCF5 /* SendMoneyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6382CAFE2B7E671000E1DCF5 /* SendMoneyView.swift */; };
+		63AD81A62BDE64BB005E4CA7 /* OldBasicViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AD81A52BDE64BB005E4CA7 /* OldBasicViews.swift */; };
 		A95C64F02AC8258800251ECD /* ExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95C64EF2AC8258800251ECD /* ExampleView.swift */; };
 		A9AEB61D2ADC5EDC0020793B /* ExampleViewWithCombine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */; };
 /* End PBXBuildFile section */
@@ -42,7 +42,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		63025AD02B90EE140040C201 /* PhotosModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PhotosModel.xcdatamodel; sourceTree = "<group>"; };
 		636A77862ABF0DF70078FA34 /* Tudor Bank.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Tudor Bank.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		636A77892ABF0DF70078FA34 /* Tudor_BankApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tudor_BankApp.swift; sourceTree = "<group>"; };
 		636A778B2ABF0DF70078FA34 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -59,6 +58,7 @@
 		6382CAFA2B7E666E00E1DCF5 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		6382CAFC2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetrieveTransactionsView.swift; sourceTree = "<group>"; };
 		6382CAFE2B7E671000E1DCF5 /* SendMoneyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMoneyView.swift; sourceTree = "<group>"; };
+		63AD81A52BDE64BB005E4CA7 /* OldBasicViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldBasicViews.swift; sourceTree = "<group>"; };
 		A95C64EF2AC8258800251ECD /* ExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleView.swift; sourceTree = "<group>"; };
 		A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewWithCombine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -115,16 +115,14 @@
 			isa = PBXGroup;
 			children = (
 				636A77892ABF0DF70078FA34 /* Tudor_BankApp.swift */,
-				63025ACF2B90EE140040C201 /* PhotosModel.xcdatamodeld */,
 				636A778B2ABF0DF70078FA34 /* ContentView.swift */,
 				6382CAFE2B7E671000E1DCF5 /* SendMoneyView.swift */,
 				6382CAFC2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift */,
 				6382CAF82B7E612C00E1DCF5 /* ImagePicker.swift */,
 				6382CAFA2B7E666E00E1DCF5 /* AccountView.swift */,
-				A95C64EF2AC8258800251ECD /* ExampleView.swift */,
-				A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */,
 				636A778D2ABF0DF90078FA34 /* Assets.xcassets */,
 				636A778F2ABF0DF90078FA34 /* Tudor_Bank.entitlements */,
+				63AD81A72BDE657F005E4CA7 /* Old */,
 				636A77902ABF0DF90078FA34 /* Preview Content */,
 			);
 			path = "Tudor Bank";
@@ -160,6 +158,16 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		63AD81A72BDE657F005E4CA7 /* Old */ = {
+			isa = PBXGroup;
+			children = (
+				A95C64EF2AC8258800251ECD /* ExampleView.swift */,
+				A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */,
+				63AD81A52BDE64BB005E4CA7 /* OldBasicViews.swift */,
+			);
+			path = Old;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -229,7 +237,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					636A77852ABF0DF70078FA34 = {
 						CreatedOnToolsVersion = 15.0;
@@ -298,9 +306,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				6382CAFB2B7E666E00E1DCF5 /* AccountView.swift in Sources */,
+				63AD81A62BDE64BB005E4CA7 /* OldBasicViews.swift in Sources */,
 				636A778C2ABF0DF70078FA34 /* ContentView.swift in Sources */,
 				6382CAFD2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift in Sources */,
-				63025AD12B90EE140040C201 /* PhotosModel.xcdatamodeld in Sources */,
 				6382CAFF2B7E671000E1DCF5 /* SendMoneyView.swift in Sources */,
 				636A778A2ABF0DF70078FA34 /* Tudor_BankApp.swift in Sources */,
 				6382CAF92B7E612C00E1DCF5 /* ImagePicker.swift in Sources */,
@@ -376,6 +384,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -437,6 +446,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -464,6 +474,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Tudor Bank/Tudor_Bank.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Tudor Bank/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -500,6 +511,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Tudor Bank/Tudor_Bank.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Tudor Bank/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -535,6 +547,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
@@ -557,6 +570,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
@@ -578,6 +592,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
@@ -599,6 +614,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
@@ -661,19 +677,6 @@
 			productName = BankingEngine;
 		};
 /* End XCSwiftPackageProductDependency section */
-
-/* Begin XCVersionGroup section */
-		63025ACF2B90EE140040C201 /* PhotosModel.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				63025AD02B90EE140040C201 /* PhotosModel.xcdatamodel */,
-			);
-			currentVersion = 63025AD02B90EE140040C201 /* PhotosModel.xcdatamodel */;
-			path = PhotosModel.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 636A777E2ABF0DF70078FA34 /* Project object */;
 }

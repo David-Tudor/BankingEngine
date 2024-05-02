@@ -13,6 +13,7 @@ struct RetrieveTransactionsView: View {
     @StateObject private var model = Model()
     @State var output = ""
     @State var transactions: Array<BankingEngine.Transaction> = []
+    @EnvironmentObject var myBank: BankingEngine
     
     let myId: Int
     let cornerSize = 15

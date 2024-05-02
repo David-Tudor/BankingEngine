@@ -1,7 +1,9 @@
 import Foundation
+import SwiftUI
 import Combine
+import CoreData
 
-public class BankingEngine {
+public class BankingEngine: ObservableObject {
     // objects
     public enum OperationError: Error {
         case accountNotFound
@@ -10,6 +12,7 @@ public class BankingEngine {
         case invalidWithdrawl
         case genericError
         case noTransactionsFound
+        case setupError
     }
     
     public enum TransactionType {
@@ -24,7 +27,6 @@ public class BankingEngine {
         public let date: Date
         public let sourceAccount: Account.ID?
         public let destinationAccount: Account.ID?
-        // is is good here or set when called?
         public let id = UUID()//: Transaction.ID
         public var type: TransactionType?
         
@@ -35,16 +37,55 @@ public class BankingEngine {
     }
     
     // properties
+    
     private var accounts: [Account.ID: Account] = [:]
     private var transactions: [Transaction] = []
+    
     public var allTransactions: CurrentValueSubject<[Transaction], Never> = .init([])
+    private var moc: NSManagedObjectContext?
     
     // methods
+    public func setup(moc: NSManagedObjectContext) {
+        guard let fetchRequest: NSFetchRequest<Account> = Account.fetchRequest() as? NSFetchRequest<Account> else { return }
+        do {
+            let fetchedAccounts = try moc.fetch(fetchRequest)
+            
+            fetchedAccounts.forEach { account in
+                accounts[account.id] = account
+            }
+            
+            self.moc = moc
+            createInitialData()
+            
+        } catch {
+            print("Error fetching tasks: \(error.localizedDescription)")
+        }
+    }
+    
+    public func createInitialData() {
+        let hasInitalDataBeenSetup = UserDefaults.standard.bool(forKey: "hasInitalDataBeenSetup")
+        guard !hasInitalDataBeenSetup else { return }
+        do {
+            try createAccount(id: 123, name: "David", balance: Decimal(10.00))
+            try createAccount(id: 1, name: "James", balance: Decimal(30))
+            UserDefaults.standard.setValue(true, forKey: "hasInitalDataBeenSetup")
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    
     public func createAccount(id: Account.ID, name: String, balance: Decimal) throws {
         if let _ = accounts[id] {
             throw OperationError.invalidId
         } else {
-            accounts[id] = Account(id: id, name: name, balance: balance)
+            guard let moc = moc else { throw OperationError.setupError }
+            let account = Account(context: moc)
+            account.id = id
+            account.name = name
+            account.balance = (Decimal(10)) as NSDecimalNumber
+            try moc.save()
+            accounts[id] = account
         }
     }
     
@@ -58,7 +99,7 @@ public class BankingEngine {
     
     public func getBalance(for id: Account.ID) throws -> Decimal {
         if let account = accounts[id] {
-            return account.balance
+            return account.balance.decimalValue
         }
         
         throw OperationError.accountNotFound
@@ -67,6 +108,7 @@ public class BankingEngine {
     public func changeAccountName(for id: Account.ID, to newName: String) throws {
         if let account = accounts[id] {
             account.name = newName
+            try moc?.save()
         }
         
         throw OperationError.accountNotFound
@@ -77,10 +119,11 @@ public class BankingEngine {
             throw OperationError.invalidDeposit
         }
         // dictionary is value type so make sure to add to the actual dictionary
-        guard accounts[id] != nil else {
+        guard accounts[id] != nil, let balance = accounts[id]?.balance else {
             throw OperationError.accountNotFound
         }
-        accounts[id]?.balance += amount
+        
+        accounts[id]?.balance = NSDecimalNumber(decimal: balance.decimalValue + amount)
         
         if shouldLogTransaction {
             logTransaction(amount: amount, from: nil, to: id)
@@ -96,13 +139,13 @@ public class BankingEngine {
             throw OperationError.accountNotFound
         }
         
-        let range = 0.0...balance
+        let range = 0.0...balance.decimalValue
         
-        guard range.contains(amount) else {
+        guard range.contains(amount), let balance = accounts[id]?.balance else {
             throw OperationError.invalidWithdrawl
         }
         
-        accounts[id]?.balance -= amount
+        accounts[id]?.balance = NSDecimalNumber(decimal: balance.decimalValue - amount)
         if shouldLogTransaction {
             logTransaction(amount: amount, from: id, to: nil)
         }
@@ -158,21 +201,13 @@ public class BankingEngine {
     }
 }
 
-public class Account {
+public class Account: NSManagedObject {
     public typealias ID = Int
     
-    public let id: Account.ID
-    public var name: String
-    public var balance: Decimal
+    @NSManaged public var id: Account.ID
+    @NSManaged public var name: String
+    @NSManaged public var balance: NSDecimalNumber
 
-    init(id: Account.ID, name: String, balance: Decimal) {
-        self.id = id
-        self.name = name
-        self.balance = balance
-    }
-    
-    
-    
 }
 
 

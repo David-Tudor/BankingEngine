@@ -12,6 +12,7 @@ import BankingEngine
 struct SendMoneyView: View {
     @StateObject private var model = Model()
     @State var output = ""
+    @EnvironmentObject var myBank: BankingEngine
     
     let myId: Int
     

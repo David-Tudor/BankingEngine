@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import BankingEngine
 
 struct MyAccountView: View {
     @StateObject private var model = Model()
@@ -16,6 +17,7 @@ struct MyAccountView: View {
     @State var nameHolder: String
     @State var isPickerShowing = false
     @State var selectedImage: UIImage
+    @EnvironmentObject var myBank: BankingEngine
     
     let myId: Int
     let cornerSize = 10
