@@ -23,20 +23,6 @@ extension NSPersistentContainer {
 
 }
 
-//public class DataController: ObservableObject {
-//    public let container: NSPersistentContainer
-//    
-//    public init() {
-//        let myBundle = Bundle(for: BankingEngine.self)
-//        container = NSPersistentContainer(name: "PhotosModel", bundle: myBundle)
-//        container.loadPersistentStores { description, error in
-//            if let error = error {
-//                print("Core Data failed to load: \(error.localizedDescription)")
-//            }
-//        }
-//    }
-//}
-
 public class DataController: ObservableObject {
     public let container: NSPersistentContainer
     
@@ -52,3 +38,17 @@ public class DataController: ObservableObject {
         }
     }
 }
+
+//public class DataController: ObservableObject {
+//    public let container: NSPersistentContainer
+//
+//    public init() {
+//        let myBundle = Bundle(for: BankingEngine.self)
+//        container = NSPersistentContainer(name: "PhotosModel", bundle: myBundle)
+//        container.loadPersistentStores { description, error in
+//            if let error = error {
+//                print("Core Data failed to load: \(error.localizedDescription)")
+//            }
+//        }
+//    }
+//}

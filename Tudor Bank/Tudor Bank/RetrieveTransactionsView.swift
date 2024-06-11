@@ -12,7 +12,7 @@ import BankingEngine
 struct RetrieveTransactionsView: View {
     @StateObject private var model = Model()
     @State var output = ""
-    @State var transactions: Array<BankingEngine.Transaction> = []
+    @State var transactions: Array<BankTransaction> = []
     @EnvironmentObject var myBank: BankingEngine
     
     let myId: Int
@@ -30,22 +30,23 @@ struct RetrieveTransactionsView: View {
             .font(.system(size: biggerText, weight: .bold))
     }
     
-    func buildListItem(with transaction: BankingEngine.Transaction, isDarkBlue: Bool) -> some View {
+    func buildListItem(with transaction: BankTransaction, isDarkBlue: Bool) -> some View {
         ZStack (alignment: .topLeading) {
             RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
                 .fill(Color(isDarkBlue ? colBlue1 : colBlue2))
             
             HStack {
                 VStack(alignment: .leading) {
-                    switch (transaction.sourceAccount, transaction.destinationAccount) {
-                    case (nil, myId):
-                        buildListTitle(with: "Deposit")
-                    case (myId, nil):
-                        buildListTitle(with: "Withdrawal")
+                    switch (transaction.sourceId, transaction.destinationId) {
+                    // cases in order from most specific
                     case (let account, myId):
-                        buildListTitle(with: "Transfer from \(account!)")
+                        buildListTitle(with: "Transfer from \(account)")
                     case (myId, let account):
-                        buildListTitle(with: "Transfer to \(account!)")
+                        buildListTitle(with: "Transfer to \(account)")
+                    case (_, myId):
+                        buildListTitle(with: "Deposit")
+                    case (myId, _):
+                        buildListTitle(with: "Withdrawal")
                     case (_, _):
                         buildListTitle(with: "Unknown")
                     }
@@ -56,7 +57,8 @@ struct RetrieveTransactionsView: View {
                 .padding(.horizontal, 30)
                 .frame(height: 80)
                 Spacer()
-                Text((transaction.type == .credit ? "+" : "-") + transaction.amount.formatted(.currency(code: "GBP")))
+                let amount = transaction.amount as Decimal
+                Text((transaction.type == .credit ? "+" : "-") + amount.formatted(.currency(code: "GBP")))
                     .padding(10)
             }
         }

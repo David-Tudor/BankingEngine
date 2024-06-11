@@ -77,16 +77,22 @@ struct SendMoneyView: View {
                     
                 } catch BankingEngine.OperationError.accountNotFound {
                     output = "Transfer - Error: account not found"
+                    print(output)
                 } catch BankingEngine.OperationError.invalidDeposit {
                     output = "Transfer - Error: invalid deposit"
+                    print(output)
                 } catch BankingEngine.OperationError.invalidWithdrawl {
                     output = "Transfer - Error: invalid withdrawal"
+                    print(output)
                 } catch BankingEngine.OperationError.genericError {
                     output = "Transfer - Error: can't transfer to the same id"
+                    print(output)
                 } catch is BankingEngine.OperationError {
                     output = "Transfer - Error: BankingEngine.OperationError"
+                    print(output)
                 } catch {
                     output = "Transfer - Some other error"
+                    print(output)
                 }
             }
             .buttonStyle(.borderedProminent)

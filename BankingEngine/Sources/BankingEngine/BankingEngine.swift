@@ -13,49 +13,38 @@ public class BankingEngine: ObservableObject {
         case genericError
         case noTransactionsFound
         case setupError
-    }
-    
-    public enum TransactionType {
-        case credit
-        case debt
-    }
-    
-    public struct Transaction: Equatable, Identifiable, Hashable {
-        public typealias ID = UUID
-        
-        public let amount: Decimal
-        public let date: Date
-        public let sourceAccount: Account.ID?
-        public let destinationAccount: Account.ID?
-        public let id = UUID()//: Transaction.ID
-        public var type: TransactionType?
-        
-        func isRecent() -> Bool {
-            let threshold = Double(30 * 24 * 3600)
-            return (Date().timeIntervalSince1970 - date.timeIntervalSince1970) <= threshold
-        }
+        case transactionNotLogged
     }
     
     // properties
-    
     private var accounts: [Account.ID: Account] = [:]
-    private var transactions: [Transaction] = []
-    
-    public var allTransactions: CurrentValueSubject<[Transaction], Never> = .init([])
+    private var transactions: [BankTransaction] = []
+    public var allTransactions: CurrentValueSubject<[BankTransaction], Never> = .init([])
     private var moc: NSManagedObjectContext?
     
     // methods
     public func setup(moc: NSManagedObjectContext) {
-        guard let fetchRequest: NSFetchRequest<Account> = Account.fetchRequest() as? NSFetchRequest<Account> else { return }
+        guard let accountFetchRequest: NSFetchRequest<Account> = Account.fetchRequest() as? NSFetchRequest<Account> else { return }
+        self.moc = moc
         do {
-            let fetchedAccounts = try moc.fetch(fetchRequest)
+            let fetchedAccounts = try moc.fetch(accountFetchRequest)
             
             fetchedAccounts.forEach { account in
                 accounts[account.id] = account
             }
-            
-            self.moc = moc
+ 
             createInitialData()
+            
+        } catch {
+            print("Error fetching tasks: \(error.localizedDescription)")
+        }
+        
+        guard let transactionFetchRequest: NSFetchRequest<BankTransaction> = BankTransaction.fetchRequest() as? NSFetchRequest<BankTransaction> else { return }
+        do {
+            let fetchedTransactions = try moc.fetch(transactionFetchRequest)
+            
+            transactions = fetchedTransactions
+            allTransactions.send(transactions)
             
         } catch {
             print("Error fetching tasks: \(error.localizedDescription)")
@@ -83,7 +72,7 @@ public class BankingEngine: ObservableObject {
             let account = Account(context: moc)
             account.id = id
             account.name = name
-            account.balance = (Decimal(10)) as NSDecimalNumber
+            account.balance = (Decimal(10)) as NSDecimalNumber // LATER CHANGE STARTING BALANCE
             try moc.save()
             accounts[id] = account
         }
@@ -126,7 +115,7 @@ public class BankingEngine: ObservableObject {
         accounts[id]?.balance = NSDecimalNumber(decimal: balance.decimalValue + amount)
         
         if shouldLogTransaction {
-            logTransaction(amount: amount, from: nil, to: id)
+            try logTransaction(amount: amount, from: nil, to: id)
         }
     }
 
@@ -147,7 +136,7 @@ public class BankingEngine: ObservableObject {
         
         accounts[id]?.balance = NSDecimalNumber(decimal: balance.decimalValue - amount)
         if shouldLogTransaction {
-            logTransaction(amount: amount, from: id, to: nil)
+            try logTransaction(amount: amount, from: id, to: nil)
         }
     }
     
@@ -160,33 +149,39 @@ public class BankingEngine: ObservableObject {
         try self.withdrawal(amount: amount, from: withdrawalId, shouldLogTransaction: false)
         try self.deposit(amount: amount, to: depositId, shouldLogTransaction: false)
         
-        logTransaction(amount: amount, from: withdrawalId, to: depositId)
+        try logTransaction(amount: amount, from: withdrawalId, to: depositId)
     }
     
     // this is only used by deposit, withdrawal and transfer
-    private func logTransaction(amount: Decimal, from sourceId: Account.ID?, to destinationId: Account.ID?) {
+    private func logTransaction(amount: Decimal, from sourceId: Account.ID?, to destinationId: Account.ID?) throws {
         
-        let transaction = Transaction(amount: amount, date: Date(), sourceAccount: sourceId, destinationAccount: destinationId)//, id: UUID())
+        guard let moc = moc, let sourceId = sourceId, let destinationId = destinationId else { throw OperationError.transactionNotLogged }
+        let transaction = BankTransaction(context: moc)
+        transaction.amount = NSDecimalNumber(decimal: amount)
+        transaction.sourceId = sourceId
+        transaction.destinationId = destinationId
+        transaction.date = Date()
+        transaction.id = UUID()
+        try moc.save()
         
         transactions.append(transaction)
         allTransactions.send(transactions)
+
     }
     
-    public func retrieveTransactions(accountId: Account.ID) throws -> [Transaction] {
+    public func retrieveTransactions(accountId: Account.ID) throws -> [BankTransaction] {
         
-        var retrievedTransactions =  transactions.filter {
-            [$0.destinationAccount, $0.sourceAccount].contains(accountId) && $0.isRecent()
+        let retrievedTransactions =  transactions.filter {
+            [$0.destinationId, $0.sourceId].contains(accountId) && $0.isRecent()
         }
         
         if retrievedTransactions.isEmpty {
             throw OperationError.noTransactionsFound
         }
         
-        // set the transaction type for each
+        // sets the transaction type for each transaction
         for transactionIndex in 0..<retrievedTransactions.count {
-            
-            if retrievedTransactions[transactionIndex].sourceAccount == accountId {
-                
+            if retrievedTransactions[transactionIndex].sourceId == accountId {
                 retrievedTransactions[transactionIndex].type = .debt
             } else {
                 retrievedTransactions[transactionIndex].type = .credit
@@ -210,4 +205,24 @@ public class Account: NSManagedObject {
 
 }
 
+public enum TransactionType {
+    case credit
+    case debt
+}
 
+public class BankTransaction: NSManagedObject, Identifiable {
+    public typealias ID = UUID
+    
+    @NSManaged public var amount: NSDecimalNumber
+    @NSManaged public var date: Date
+    @NSManaged public var sourceId: Account.ID
+    @NSManaged public var destinationId: Account.ID
+    @NSManaged public var id: UUID
+    public var type: TransactionType?
+    
+    func isRecent() -> Bool {
+        let threshold = Double(30 * 24 * 3600)
+        return (Date().timeIntervalSince1970 - date.timeIntervalSince1970) <= threshold
+    }
+
+}

@@ -9,9 +9,6 @@ import BankingEngine
 import Combine
 
 
-
-
-
 struct NavigationLazyView<Content: View>: View {
     let build: () -> Content
     init(_ build: @autoclosure @escaping () -> Content) {
@@ -67,7 +64,7 @@ extension Color {
 
 class Model: ObservableObject {
     @Published var idField = MyField(type: .id, enteredValue: "")
-    @Published var id2Field = MyField(type: .id, enteredValue: "") // used for destinations Id
+    @Published var id2Field = MyField(type: .id, enteredValue: "") // used for destination Id
     @Published var nameField = MyField(type: .name, enteredValue: "")
     @Published var balanceField = MyField(type: .amount, enteredValue: "")
     
