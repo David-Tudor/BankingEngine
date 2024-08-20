@@ -8,7 +8,6 @@ import SwiftUI
 import BankingEngine
 import Combine
 
-
 struct NavigationLazyView<Content: View>: View {
     let build: () -> Content
     init(_ build: @autoclosure @escaping () -> Content) {

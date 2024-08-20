@@ -31,9 +31,9 @@ struct SendMoneyView: View {
     
     var body: some View {
         VStack {
-            Text("Send money")
-                .foregroundColor(Color(colBlack))
-                .font(.system(size: 24, weight: .bold))
+//            Text("Send money")
+//                .foregroundColor(Color(colBlack))
+//                .font(.system(size: 24, weight: .bold))
             
             VStack {
                 ZStack {
@@ -96,12 +96,15 @@ struct SendMoneyView: View {
                 }
             }
             .buttonStyle(.borderedProminent)
+            .tint(.orange)
             .disabled(!(model.isIdValid && model.isBalanceValid))
             .frame(maxWidth: .infinity)
             
             Text(output)
                 .padding(20)
         }
+        .navigationTitle("Send money")
+        .navigationBarTitleDisplayMode(.large)
         .onAppear {
             model.createIdValidationSubscription()
             
