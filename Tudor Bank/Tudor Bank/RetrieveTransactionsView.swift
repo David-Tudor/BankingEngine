@@ -72,16 +72,16 @@ struct RetrieveTransactionsView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                Text("Recent transactions")
-                    .foregroundColor(Color(colBlack))
-                    .font(.system(size: 28, weight: .bold))
-                    .padding(EdgeInsets())
+                //Text("Recent transactions")
+//                    .foregroundColor(Color(colBlack))
+//                    .font(.system(size: 28, weight: .bold))
+//                    .padding(EdgeInsets())
                 // if no error message i.e there are transactions
                 if transactions.count != 0 {
                     ScrollView {
                         VStack {
                             ForEach(0..<transactions.count , id: \.self) { i in
-                                buildListItem(with: transactions[i], isDarkBlue: (i % 2) == 0)
+                                buildListItem(with: transactions[transactions.count - 1 - i], isDarkBlue: (i % 2) == 0)
                             }
                         }
                     }
@@ -89,6 +89,8 @@ struct RetrieveTransactionsView: View {
                     Text("No transactions found")
                 }
             }
+            .navigationTitle("Recent transactions")
+            .navigationBarTitleDisplayMode(.large)
         }
         .onReceive(myBank.allTransactions, perform: { _ in
             transactions = (try? myBank.retrieveTransactions(accountId: myId)) ?? []

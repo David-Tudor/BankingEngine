@@ -46,9 +46,9 @@ struct MyAccountView: View {
 
     var body: some View {
         VStack {
-            Text("My account")
-                .foregroundColor(Color(colBlack))
-                .font(.system(size: 24, weight: .bold))
+//            Text("My account")
+//                .foregroundColor(Color(colBlack))
+//                .font(.system(size: 24, weight: .bold))
             
             // picture selector
             VStack {
@@ -172,6 +172,8 @@ struct MyAccountView: View {
             }
             .frame(height: 30)
         }
+        .navigationTitle("My account")
+        .navigationBarTitleDisplayMode(.large)
         .onAppear {
             model.createIdValidationSubscription()
             model.createBalanceValidationSubscription()
