@@ -155,7 +155,8 @@ public class BankingEngine: ObservableObject {
     // this is only used by deposit, withdrawal and transfer
     private func logTransaction(amount: Decimal, from sourceId: Account.ID?, to destinationId: Account.ID?) throws {
         
-        guard let moc = moc, let sourceId = sourceId, let destinationId = destinationId else { throw OperationError.transactionNotLogged }
+        guard let moc = moc, let sourceId = sourceId, let destinationId = destinationId else {
+            throw OperationError.transactionNotLogged}
         let transaction = BankTransaction(context: moc)
         transaction.amount = NSDecimalNumber(decimal: amount)
         transaction.sourceId = sourceId

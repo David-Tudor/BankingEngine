@@ -62,6 +62,7 @@ extension Color {
 }
 
 class Model: ObservableObject {
+    // Helps store data and checks values are valid.
     @Published var idField = MyField(type: .id, enteredValue: "")
     @Published var id2Field = MyField(type: .id, enteredValue: "") // used for destination Id
     @Published var nameField = MyField(type: .name, enteredValue: "")
@@ -187,6 +188,7 @@ struct ContentView: View {
     let colBack1: UInt = 0xF6F5FD
     let colBack2: UInt = 0xD9EADA
     let colBack3: UInt = 0xFFF9F1
+    let colBack4: UInt = 0xf5ebf4
     
     func updateAccountDetails() {
         do {
@@ -282,7 +284,7 @@ struct ContentView: View {
                         
                         HStack(spacing: boxSpacing){
                             // Account
-                            NavigationLink(destination: NavigationLazyView(MyAccountView(myId: myId, myName: myName).padding(.horizontal, 20))) {
+                            NavigationLink(destination: NavigationLazyView(AccountView(myId: myId, myName: myName).padding(.horizontal, 20))) {
                                 ZStack (alignment: .topLeading) {
                                     RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
                                         .fill(Color(colBack3))
@@ -295,6 +297,28 @@ struct ContentView: View {
                                             .font(.system(size: bigMenuText, weight: .semibold))
                                             .foregroundColor(Color(colBlack))
                                         Text("View account details")
+                                            .font(.system(size: smallMenuText))
+                                            .foregroundColor(Color(colGrey))
+                                    }
+                                    .frame(width: (geometry.size.width - boxSpacing) * 0.45, height: (geometry.size.width - boxSpacing) * 0.5)
+                                }
+                                .frame(width: (geometry.size.width - boxSpacing) * 0.5, height: (geometry.size.width - boxSpacing) * 0.5)
+                            }
+                            
+                            // Dev tools
+                            NavigationLink(destination: NavigationLazyView(DevToolsView(myId: myId).padding(.horizontal, 20))) {
+                                ZStack (alignment: .topLeading) {
+                                    RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
+                                        .fill(Color(colBack4))
+                                    
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        Image(systemName: "wrench.and.screwdriver")
+                                            .foregroundColor(Color(colBlue))
+                                            .dynamicTypeSize(.xxxLarge )
+                                        Text("Tools")
+                                            .font(.system(size: bigMenuText, weight: .semibold))
+                                            .foregroundColor(Color(colBlack))
+                                        Text("Developer functions")
                                             .font(.system(size: smallMenuText))
                                             .foregroundColor(Color(colGrey))
                                     }

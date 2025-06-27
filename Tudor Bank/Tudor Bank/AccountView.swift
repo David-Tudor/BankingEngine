@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import BankingEngine
 
-struct MyAccountView: View {
+struct AccountView: View {
     @StateObject private var model = Model()
     @State var output = ""
     @State var isEditable = false

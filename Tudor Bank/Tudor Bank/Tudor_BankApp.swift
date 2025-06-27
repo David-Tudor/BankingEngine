@@ -18,6 +18,7 @@ struct Tudor_BankApp: App {
             ContentView()
                 .environment(\.managedObjectContext, dataController.container.viewContext)
                 .environmentObject(myBank)
+                .preferredColorScheme(.light)
         }
         
     }

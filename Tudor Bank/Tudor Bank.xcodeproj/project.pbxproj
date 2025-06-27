@@ -20,6 +20,7 @@
 		6382CAFD2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6382CAFC2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift */; };
 		6382CAFF2B7E671000E1DCF5 /* SendMoneyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6382CAFE2B7E671000E1DCF5 /* SendMoneyView.swift */; };
 		63AD81A62BDE64BB005E4CA7 /* OldBasicViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AD81A52BDE64BB005E4CA7 /* OldBasicViews.swift */; };
+		63FA48392E0EAEFC00B5390B /* DevToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63FA48382E0EAEFB00B5390B /* DevToolsView.swift */; };
 		A95C64F02AC8258800251ECD /* ExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95C64EF2AC8258800251ECD /* ExampleView.swift */; };
 		A9AEB61D2ADC5EDC0020793B /* ExampleViewWithCombine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */; };
 /* End PBXBuildFile section */
@@ -59,6 +60,7 @@
 		6382CAFC2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetrieveTransactionsView.swift; sourceTree = "<group>"; };
 		6382CAFE2B7E671000E1DCF5 /* SendMoneyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMoneyView.swift; sourceTree = "<group>"; };
 		63AD81A52BDE64BB005E4CA7 /* OldBasicViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldBasicViews.swift; sourceTree = "<group>"; };
+		63FA48382E0EAEFB00B5390B /* DevToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevToolsView.swift; sourceTree = "<group>"; };
 		A95C64EF2AC8258800251ECD /* ExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleView.swift; sourceTree = "<group>"; };
 		A9AEB61C2ADC5EDB0020793B /* ExampleViewWithCombine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewWithCombine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -117,6 +119,7 @@
 				636A77892ABF0DF70078FA34 /* Tudor_BankApp.swift */,
 				636A778B2ABF0DF70078FA34 /* ContentView.swift */,
 				6382CAFE2B7E671000E1DCF5 /* SendMoneyView.swift */,
+				63FA48382E0EAEFB00B5390B /* DevToolsView.swift */,
 				6382CAFC2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift */,
 				6382CAF82B7E612C00E1DCF5 /* ImagePicker.swift */,
 				6382CAFA2B7E666E00E1DCF5 /* AccountView.swift */,
@@ -309,6 +312,7 @@
 				63AD81A62BDE64BB005E4CA7 /* OldBasicViews.swift in Sources */,
 				636A778C2ABF0DF70078FA34 /* ContentView.swift in Sources */,
 				6382CAFD2B7E66BA00E1DCF5 /* RetrieveTransactionsView.swift in Sources */,
+				63FA48392E0EAEFC00B5390B /* DevToolsView.swift in Sources */,
 				6382CAFF2B7E671000E1DCF5 /* SendMoneyView.swift in Sources */,
 				636A778A2ABF0DF70078FA34 /* Tudor_BankApp.swift in Sources */,
 				6382CAF92B7E612C00E1DCF5 /* ImagePicker.swift in Sources */,
@@ -476,6 +480,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Tudor Bank/Preview Content\"";
+				DEVELOPMENT_TEAM = 5T32496X8M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -513,6 +518,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Tudor Bank/Preview Content\"";
+				DEVELOPMENT_TEAM = 5T32496X8M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
