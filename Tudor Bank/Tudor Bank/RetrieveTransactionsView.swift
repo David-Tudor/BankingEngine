@@ -37,30 +37,33 @@ struct RetrieveTransactionsView: View {
             
             HStack {
                 VStack(alignment: .leading) {
-                    switch (transaction.sourceId, transaction.destinationId) {
-                    // cases in order from most specific
-                    case (let account, myId):
-                        buildListTitle(with: "Transfer from \(account)")
-                    case (myId, let account):
-                        buildListTitle(with: "Transfer to \(account)")
-                    case (_, myId):
+                    if transaction.sourceId >= 0 && transaction.destinationId >= 0 {
+                        switch (transaction.sourceId, transaction.destinationId) {
+                        case (let account, myId):
+                            buildListTitle(with: "Transfer from \(account)")
+                        case (myId, let account):
+                            buildListTitle(with: "Transfer to \(account)")
+                        case (_,_):
+                            buildListTitle(with: "Unknown")
+                        }
+                    } else if transaction.sourceId < 0 && transaction.destinationId >= 0 {
                         buildListTitle(with: "Deposit")
-                    case (myId, _):
+                    } else if transaction.sourceId >= 0 && transaction.destinationId < 0 {
                         buildListTitle(with: "Withdrawal")
-                    case (_, _):
+                    } else {
                         buildListTitle(with: "Unknown")
                     }
-                    Text("\(transaction.date.formatted(date: .abbreviated, time: .shortened))")
-                        .foregroundColor(Color(colGrey))
-                        .font(.system(size: smallerText, weight: .regular))
                 }
-                .padding(.horizontal, 30)
-                .frame(height: 80)
-                Spacer()
-                let amount = transaction.amount as Decimal
-                Text((transaction.type == .credit ? "+" : "-") + amount.formatted(.currency(code: "GBP")))
-                    .padding(10)
+                Text("\(transaction.date.formatted(date: .abbreviated, time: .shortened))")
+                    .foregroundColor(Color(colGrey))
+                    .font(.system(size: smallerText, weight: .regular))
             }
+            .padding(.horizontal, 30)
+            .frame(height: 80)
+            Spacer()
+            let amount = transaction.amount as Decimal
+            Text((transaction.type == .credit ? "+" : "-") + amount.formatted(.currency(code: "GBP")))
+                .padding(10)
         }
         .frame(height: 80)
     }
@@ -68,14 +71,10 @@ struct RetrieveTransactionsView: View {
     init(myId: Int) {
         self.myId = myId
     }
-
+    
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                //Text("Recent transactions")
-//                    .foregroundColor(Color(colBlack))
-//                    .font(.system(size: 28, weight: .bold))
-//                    .padding(EdgeInsets())
                 // if no error message i.e there are transactions
                 if transactions.count != 0 {
                     ScrollView {

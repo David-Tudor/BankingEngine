@@ -81,9 +81,9 @@ class Model: ObservableObject {
         }
     }
     
-    func isValidInt(input: String) -> Bool {
-        let wasCast = (Int(input) != nil)
-        if (input != "") && wasCast {
+    func isValidId(input: String) -> Bool {
+        let isNilOrNegative = (Int(input) ?? -1) < 0
+        if (input != "") && !isNilOrNegative {
             return true
         } else {
             return false
@@ -105,7 +105,7 @@ class Model: ObservableObject {
             return self.isValidString(input: field.enteredValue)
             
         case .id:
-            return self.isValidInt(input: field.enteredValue)
+            return self.isValidId(input: field.enteredValue)
             
         case .amount:
             return self.isValidDec(input: field.enteredValue)

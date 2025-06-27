@@ -68,7 +68,7 @@ struct DevToolsView: View {
             }
             .frame(height: 80)
             
-            // Make accout button
+            // Make account button
             Button("Make account") {
                 do {
                     let id = Int(model.idField.enteredValue)!

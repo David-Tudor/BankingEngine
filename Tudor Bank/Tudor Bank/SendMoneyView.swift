@@ -31,10 +31,6 @@ struct SendMoneyView: View {
     
     var body: some View {
         VStack {
-//            Text("Send money")
-//                .foregroundColor(Color(colBlack))
-//                .font(.system(size: 24, weight: .bold))
-            
             VStack {
                 ZStack {
                     RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))

@@ -65,8 +65,13 @@ public class BankingEngine: ObservableObject {
     
     
     public func createAccount(id: Account.ID, name: String, balance: Decimal) throws {
+        // don't allow if id is taken or negative
         if let _ = accounts[id] {
             throw OperationError.invalidId
+            
+        } else if id < 0 {
+            throw OperationError.invalidId
+            
         } else {
             guard let moc = moc else { throw OperationError.setupError }
             let account = Account(context: moc)
@@ -115,7 +120,7 @@ public class BankingEngine: ObservableObject {
         accounts[id]?.balance = NSDecimalNumber(decimal: balance.decimalValue + amount)
         
         if shouldLogTransaction {
-            try logTransaction(amount: amount, from: nil, to: id)
+            try logTransaction(amount: amount, from: -1, to: id) // can't have nil ids, so negative used to show impossible accounts
         }
     }
 
@@ -136,7 +141,7 @@ public class BankingEngine: ObservableObject {
         
         accounts[id]?.balance = NSDecimalNumber(decimal: balance.decimalValue - amount)
         if shouldLogTransaction {
-            try logTransaction(amount: amount, from: id, to: nil)
+            try logTransaction(amount: amount, from: id, to: -1) // can't have nil ids, so negative used to show impossible accounts
         }
     }
     
@@ -153,9 +158,9 @@ public class BankingEngine: ObservableObject {
     }
     
     // this is only used by deposit, withdrawal and transfer
-    private func logTransaction(amount: Decimal, from sourceId: Account.ID?, to destinationId: Account.ID?) throws {
+    private func logTransaction(amount: Decimal, from sourceId: Account.ID, to destinationId: Account.ID) throws {
         
-        guard let moc = moc, let sourceId = sourceId, let destinationId = destinationId else {
+        guard let moc = moc else { //, let sourceId = sourceId, let destinationId = destinationId
             throw OperationError.transactionNotLogged}
         let transaction = BankTransaction(context: moc)
         transaction.amount = NSDecimalNumber(decimal: amount)
@@ -216,13 +221,15 @@ public class BankTransaction: NSManagedObject, Identifiable {
     
     @NSManaged public var amount: NSDecimalNumber
     @NSManaged public var date: Date
-    @NSManaged public var sourceId: Account.ID
-    @NSManaged public var destinationId: Account.ID
     @NSManaged public var id: UUID
     public var type: TransactionType?
     
+    // @NSManaged cannot be nil as must be compatible with C. Therefore, ids will be positive, and negative ones taken to be nil.
+    @NSManaged public var sourceId: Account.ID
+    @NSManaged public var destinationId: Account.ID
+    
     func isRecent() -> Bool {
-        let threshold = Double(30 * 24 * 3600)
+        let threshold = Double(30 * 24 * 3600) // within 30 days
         return (Date().timeIntervalSince1970 - date.timeIntervalSince1970) <= threshold
     }
 
