@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24F74" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="Account" representedClassName="BankingEngine.Account" syncable="YES">
         <attribute name="balance" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES" customClassName="."/>
         <attribute name="name" optional="YES" attributeType="String" customClassName="UIImage"/>
+        <attribute name="picture" optional="YES" attributeType="Binary"/>
     </entity>
     <entity name="BankTransaction" representedClassName="BankingEngine.BankTransaction" syncable="YES">
         <attribute name="amount" optional="YES" attributeType="Decimal" defaultValueString="0"/>

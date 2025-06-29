@@ -208,6 +208,7 @@ public class Account: NSManagedObject {
     @NSManaged public var id: Account.ID
     @NSManaged public var name: String
     @NSManaged public var balance: NSDecimalNumber
+    @NSManaged public var picture: Data
 
 }
 

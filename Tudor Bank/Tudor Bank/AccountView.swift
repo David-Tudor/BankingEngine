@@ -55,9 +55,19 @@ struct AccountView: View {
 
                 Image(uiImage: selectedImage)
                     .resizable()
+                    .aspectRatio(contentMode: .fill)
                     .frame(width: 150, height: 150)
                     .clipShape(Circle())
-                
+                    .onAppear {
+                        guard
+                            let imageString = UserDefaults.standard.object(forKey: "userImage") as? String,
+                            let imageData = Data(base64Encoded: imageString),
+                            let uiImage = UIImage(data: imageData)
+                        else {
+                            return
+                        }
+                        selectedImage = uiImage
+                    }
                 
                 Button {
                     isPickerShowing = true
